@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Infaq Quran — Baitul Amal Madani</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green:        #0F7B5C;
+      --green-dark:   #0A5E44;
+      --green-darker: #084D38;
+      --green-light:  #E0F2EB;
+      --green-xlight: #F2FAF6;
+      --amber:        #E9A020;
+      --text:         #192E26;
+      --text-mid:     #3A5848;
+      --text-muted:   #7A9B8B;
+      --border:       #EAF0ED;
+      --border-mid:   #D8E6DF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: #C8D9D2;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .mi {
+      font-family: 'Material Symbols Rounded';
+      font-style: normal; font-weight: normal;
+      line-height: 1; font-size: inherit;
+      letter-spacing: normal; text-transform: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      -webkit-font-smoothing: antialiased;
+      user-select: none; vertical-align: middle;
+    }
+
+    #app {
+      width: 100%; max-width: 430px;
+      background: #fff;
+      min-height: 100vh;
+      position: relative; overflow-x: hidden;
+    }
+
+    /* ── HEADER ──────────────────────────────── */
+    .header {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--green-dark);
+      padding: 13px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; }
+    .header-bam-logo { height: 29px; width: auto; flex-shrink: 0; }
+    .btn-share {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #fff; font-size: 20px;
+      transition: background .2s;
+    }
+    .btn-share:active { background: rgba(255,255,255,.24); }
+
+    /* ── HERO ────────────────────────────────── */
+    .hero {
+      position: relative; width: 100%; height: 220px; overflow: hidden;
+    }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(8,77,56,.08) 0%, rgba(6,36,26,.62) 100%);
+    }
+    .hero-badge {
+      position: absolute; top: 14px; left: 14px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.26);
+      border-radius: 100px; padding: 5px 12px;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: #4ade80; border-radius: 50%;
+      animation: blink 1.6s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.75)} }
+    .hero-badge span { font-size: 11.5px; color: #fff; font-weight: 600; letter-spacing: .2px; }
+    .hero-days {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--amber); border-radius: 8px;
+      padding: 5px 10px; font-size: 11.5px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .hero-days .mi { font-size: 14px; }
+
+    /* ── CONTENT — one unified surface ──────── */
+    .content { background: #fff; }
+
+    .section {
+      padding: 22px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section:last-child { border-bottom: none; }
+
+    /* ── ORG + TITLE ─────────────────────────── */
+    .org-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--green-xlight);
+      color: var(--green-darker);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .5px; text-transform: uppercase;
+      padding: 4px 10px 4px 7px; border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .org-badge .mi { font-size: 13px; }
+    .campaign-title {
+      font-size: 18px; font-weight: 700; line-height: 1.45;
+      color: var(--text); margin-bottom: 0;
+    }
+    .campaign-title em { font-style: normal; color: var(--green); }
+
+    /* ── PROGRESS ────────────────────────────── */
+    .prog-head {
+      display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;
+    }
+    .prog-amount { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.4px; }
+    .prog-pct {
+      font-size: 11.5px; font-weight: 700;
+      color: var(--green); background: var(--green-light);
+      padding: 2px 8px; border-radius: 100px;
+    }
+    .prog-track {
+      width: 100%; height: 8px;
+      background: var(--green-light); border-radius: 100px; overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .prog-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--green) 0%, #2dd4a8 100%);
+      border-radius: 100px;
+      transition: width 1.6s cubic-bezier(.25,.46,.45,.94);
+      position: relative; overflow: hidden;
+    }
+    .prog-fill::after {
+      content: '';
+      position: absolute; top: 0; left: -120%; width: 80%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+      animation: shimmer 2.2s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%{left:-120%} 100%{left:160%} }
+    .prog-foot {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .prog-target { font-size: 12px; color: var(--text-muted); }
+    .prog-target strong { color: var(--text-mid); font-weight: 600; }
+    .prog-donors {
+      font-size: 12px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 3px;
+    }
+    .prog-donors .mi { font-size: 14px; color: var(--green); }
+    .prog-donors strong { color: var(--green); font-weight: 700; }
+
+    .stats-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-top: 18px;
+      padding-top: 18px; border-top: 1px solid var(--border);
+    }
+    .stat-box {
+      background: var(--green-xlight);
+      border: 1px solid var(--green-light);
+      border-radius: 12px; padding: 12px;
+    }
+    .stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+    .stat-val {
+      font-size: 14.5px; font-weight: 700; color: var(--text);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .stat-val .mi { font-size: 15px; color: var(--green); }
+
+    /* ── DONATE ──────────────────────────────── */
+    .sec-label {
+      font-size: 10.5px; font-weight: 700;
+      color: var(--text-muted); letter-spacing: .8px; text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sec-label .mi { font-size: 15px; color: var(--green); }
+
+    .amount-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
+    }
+    .amt-btn {
+      border: 1.5px solid var(--border-mid);
+      background: #fafcfb;
+      border-radius: 10px; padding: 12px 8px; text-align: center;
+      cursor: pointer; transition: all .18s ease; font-family: inherit;
+    }
+    .amt-btn .av { font-size: 14.5px; font-weight: 800; color: var(--text); display: block; }
+    .amt-btn .as { font-size: 10.5px; color: var(--text-muted); font-weight: 500; }
+    .amt-btn.active {
+      border-color: var(--green); background: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(15,123,92,.1);
+    }
+    .amt-btn.active .av { color: var(--green-darker); }
+    .amt-btn:active { transform: scale(.96); }
+    .amt-btn:hover:not(.active) { border-color: var(--green); background: var(--green-xlight); }
+
+    .divider-row {
+      display: flex; align-items: center; gap: 10px; margin: 14px 0;
+    }
+    .div-line { flex: 1; height: 1px; background: var(--border); }
+    .div-txt { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+    .inp-wrap { position: relative; margin-bottom: 14px; }
+    .inp-pfx {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; font-weight: 700; color: var(--text-muted); pointer-events: none;
+    }
+    .amt-input {
+      width: 100%; padding: 13px 14px 13px 46px;
+      border: 1.5px solid var(--border-mid); border-radius: 10px;
+      font-family: inherit; font-size: 15px; font-weight: 700;
+      color: var(--text); background: #fafcfb;
+      transition: border-color .2s, background .2s; outline: none;
+    }
+    .amt-input:focus { border-color: var(--green); background: #fff; }
+    .amt-input::placeholder { color: #b5cece; font-weight: 400; }
+
+    .btn-wa {
+      width: 100%; padding: 15px;
+      background: linear-gradient(90deg, #FF8400 0%, #FF3E3E 100%);
+      border: none; border-radius: 10px;
+      color: #fff; font-family: inherit;
+      font-size: 16px; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: transform .18s, box-shadow .18s;
+      box-shadow: 0 5px 18px rgba(255,62,62,.28); letter-spacing: -.2px;
+    }
+    .btn-wa:active { transform: scale(.97); box-shadow: 0 2px 8px rgba(255,62,62,.2); }
+    .btn-wa svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+
+    /* ── ABOUT ───────────────────────────────── */
+    .sec-title {
+      font-size: 15.5px; font-weight: 700; color: var(--text);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 9px;
+    }
+    .sec-ico {
+      width: 30px; height: 30px;
+      background: var(--green-light); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: var(--green); flex-shrink: 0;
+    }
+    .about-p { font-size: 13.5px; line-height: 1.76; color: var(--text-mid); }
+    .about-p + .about-p { margin-top: 10px; }
+    .about-quote {
+      margin: 14px 0; padding: 13px 16px;
+      background: var(--green-xlight);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      font-size: 13px; color: var(--green-darker);
+      font-style: italic; line-height: 1.7;
+    }
+
+    /* ── TABS ────────────────────────────────── */
+    .tabs-nav {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 18px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 6px;
+      border: none; background: transparent;
+      font-family: inherit; font-size: 12.5px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer;
+      transition: all .2s ease;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab-btn .mi { font-size: 15px; }
+    .tab-btn:hover:not(.active) { color: var(--green); }
+    .tab-btn.active { color: var(--green); font-weight: 700; border-bottom-color: var(--green); }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; animation: fadein .22s ease; }
+    @keyframes fadein { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+
+    .benefit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .benefit-card {
+      background: var(--green-xlight);
+      border: 1px solid var(--green-light);
+      border-radius: 12px; padding: 14px 12px; text-align: center;
+    }
+    .bi { font-size: 26px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: var(--green); }
+    .bt { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .bd { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    .update-list { display: flex; flex-direction: column; gap: 14px; }
+    .update-item { display: flex; gap: 12px; align-items: flex-start; }
+    .update-thumb {
+      width: 68px; height: 68px; border-radius: 10px; object-fit: cover;
+      flex-shrink: 0; background: var(--green-light);
+    }
+    .ud { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+    .ud .mi { font-size: 13px; color: var(--green); }
+    .ut { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 3px; }
+    .ux { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    .donor-list { display: flex; flex-direction: column; gap: 12px; }
+    .donor-item { display: flex; align-items: center; gap: 11px; }
+    .d-avatar {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .d-avatar .mi { font-size: 20px; }
+    .d-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .d-time { font-size: 11px; color: var(--text-muted); }
+    .d-right { margin-left: auto; text-align: right; }
+    .d-amount { font-size: 13px; font-weight: 800; color: var(--green-darker); }
+    .d-doa { font-size: 11px; color: var(--text-muted); font-style: italic; }
+    .donor-divider { height: 1px; background: var(--border); }
+
+    /* ── FAQ ─────────────────────────────────── */
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      width: 100%; background: none; border: none;
+      padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      cursor: pointer; text-align: left; font-family: inherit;
+    }
+    .faq-qt { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .faq-arr {
+      width: 26px; height: 26px; background: var(--green-light);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--green); font-size: 19px;
+      transition: transform .3s ease, background .2s;
+    }
+    .faq-item.open .faq-arr { transform: rotate(180deg); background: var(--green); color: #fff; }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .faq-at { padding: 0 0 14px; font-size: 13px; color: var(--text-mid); line-height: 1.76; }
+
+    /* ── FOOTER ──────────────────────────────── */
+    .footer {
+      background: var(--green-darker);
+      padding: 28px 20px 36px;
+      text-align: center;
+    }
+    .ft-logo { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .ft-sub { font-size: 12px; color: rgba(255,255,255,.38); margin-bottom: 18px; }
+    .ft-links { display: flex; justify-content: center; gap: 18px; margin-bottom: 16px; }
+    .ft-link { font-size: 12px; color: rgba(255,255,255,.38); text-decoration: none; transition: color .2s; }
+    .ft-link:hover { color: rgba(255,255,255,.7); }
+    .ft-copy { font-size: 11px; color: rgba(255,255,255,.2); }
+
+    /* ── FLOAT WA ────────────────────────────── */
+    .float-wa {
+      position: fixed; bottom: 22px;
+      right: max(20px, calc((100vw - 430px) / 2 + 20px));
+      z-index: 300;
+      height: 48px; padding: 0 20px;
+      background: #25D366;
+      border: none; border-radius: 100px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      color: #fff; cursor: pointer; white-space: nowrap;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700;
+      box-shadow: 0 6px 22px rgba(37,211,102,.4);
+      transition: all .3s ease;
+      opacity: 0; transform: translateY(20px) scale(.8);
+    }
+    .float-wa.visible { opacity: 1; transform: translateY(0) scale(1); }
+    .float-wa:active { transform: scale(.95); }
+    .float-wa svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+
+    /* ── REVEAL ──────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(14px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ── TOAST ───────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 82px; left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(18,46,36,.9); color: #fff;
+      padding: 10px 18px; border-radius: 100px;
+      font-size: 13px; font-weight: 500;
+      z-index: 500; opacity: 0; white-space: nowrap;
+      transition: all .3s ease;
+      backdrop-filter: blur(8px);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <svg class="header-bam-logo" viewBox="0 0 239 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6.35741 28.2203C5.61668 27.3712 5.15463 26.1758 5.15463 24.8502C5.15463 22.2744 6.89689 20.1861 9.04594 20.1861C11.195 20.1861 12.9371 22.2744 12.9371 24.8502C12.9371 25.9046 12.6449 26.8769 12.1527 27.6582C12.4631 27.4563 12.7596 27.2255 13.0369 26.9649L18.6983 21.6421C20.31 20.1268 22.8308 20.1544 24.409 21.7047L25.7653 23.037L29.4438 26.6505C29.8075 27.0077 30.2054 27.3118 30.6267 27.564C29.8056 26.5464 29.2995 25.1614 29.2995 23.6338C29.2995 20.5105 31.4118 17.9786 34.0176 17.9786C36.6233 17.9786 38.7356 20.5105 38.7356 23.6338C38.7356 24.9661 38.3504 26.1898 37.7073 27.1563L49.881 18.0162C46.6832 7.58533 36.9777 0 25.499 0C14.5329 0 5.18402 6.92219 1.58274 16.6354C0.0694358 20.717 1.63187 25.3028 5.28717 27.6666C5.6303 27.8882 5.98903 28.0718 6.35741 28.2203Z" fill="#fff"/>
+        <path d="M37.5584 36.3969C35.2957 39.0291 31.2472 39.1101 28.8811 36.5705L22.3149 29.5227L22.5012 29.1688L25.7664 23.0368L20.7438 27.8366L14.7899 33.5797C11.5284 36.2826 8.39341 35.3844 5.83053 33.18C1.00979 29.0334 0 25.5046 0 25.5046C0.0027548 39.5858 11.4185 51 25.5002 51C39.5682 51 50.975 39.6078 50.9998 25.5456L59.6872 10.6541L37.5584 36.3969Z" fill="#fff"/>
+        <path d="M69.6242 21C69.5358 21 69.4607 20.9735 69.3989 20.9205C69.3458 20.8586 69.3193 20.7835 69.3193 20.6951V17.5668L66.1247 12.1584C66.1159 12.1319 66.107 12.1054 66.0982 12.0789C66.0893 12.0524 66.0849 12.0215 66.0849 11.9861C66.0849 11.9154 66.1114 11.8535 66.1645 11.8005C66.2175 11.7475 66.2793 11.721 66.35 11.721H67.0393C67.1189 11.721 67.1896 11.7431 67.2514 11.7873C67.3133 11.8226 67.3575 11.8756 67.384 11.9463L69.9688 16.2412L72.5537 11.9463C72.5979 11.8756 72.6465 11.8226 72.6995 11.7873C72.7614 11.7431 72.8321 11.721 72.9116 11.721H73.5877C73.6672 11.721 73.7335 11.7475 73.7865 11.8005C73.8395 11.8535 73.866 11.9154 73.866 11.9861C73.866 12.0215 73.8616 12.0524 73.8528 12.0789C73.8439 12.1054 73.8307 12.1319 73.813 12.1584L70.6316 17.5668V20.6951C70.6316 20.7835 70.6007 20.8586 70.5388 20.9205C70.4858 20.9735 70.4107 21 70.3135 21H69.6242ZM73.8421 21C73.7714 21 73.7096 20.9735 73.6565 20.9205C73.6035 20.8674 73.577 20.8056 73.577 20.7349C73.577 20.6907 73.5814 20.6421 73.5903 20.5891L76.8777 12.0126C76.913 11.9242 76.9616 11.8535 77.0235 11.8005C77.0853 11.7475 77.1781 11.721 77.3019 11.721H78.2032C78.3181 11.721 78.4065 11.7475 78.4684 11.8005C78.5391 11.8535 78.5921 11.9242 78.6274 12.0126L81.9016 20.5891C81.9193 20.6421 81.9281 20.6907 81.9281 20.7349C81.9281 20.8056 81.9016 20.8674 81.8486 20.9205C81.7955 20.9735 81.7337 21 81.663 21H80.9869C80.8809 21 80.8014 20.9735 80.7483 20.9205C80.7042 20.8674 80.6732 20.8188 80.6556 20.7747L79.9265 18.8923H75.5786L74.8495 20.7747C74.8407 20.8188 74.8098 20.8674 74.7568 20.9205C74.7037 20.9735 74.6242 21 74.5182 21H73.8421ZM75.963 17.7523H79.5421L77.7525 13.0466L75.963 17.7523ZM85.1712 21C85.0828 21 85.0077 20.9735 84.9459 20.9205C84.8928 20.8586 84.8663 20.7835 84.8663 20.6951V17.5668L81.6717 12.1584C81.6629 12.1319 81.654 12.1054 81.6452 12.0789C81.6363 12.0524 81.6319 12.0215 81.6319 11.9861C81.6319 11.9154 81.6584 11.8535 81.7115 11.8005C81.7645 11.7475 81.8263 11.721 81.897 11.721H82.5863C82.6659 11.721 82.7366 11.7431 82.7984 11.7873C82.8603 11.8226 82.9045 11.8756 82.931 11.9463L85.5158 16.2412L88.1007 11.9463C88.1449 11.8756 88.1935 11.8226 88.2465 11.7873C88.3084 11.7431 88.3791 11.721 88.4586 11.721H89.1347C89.2142 11.721 89.2805 11.7475 89.3335 11.8005C89.3865 11.8535 89.413 11.9154 89.413 11.9861C89.413 12.0215 89.4086 12.0524 89.3998 12.0789C89.3909 12.1054 89.3777 12.1319 89.36 12.1584L86.1786 17.5668V20.6951C86.1786 20.7835 86.1477 20.8586 86.0858 20.9205C86.0328 20.9735 85.9577 21 85.8605 21H85.1712ZM89.3891 21C89.3184 21 89.2566 20.9735 89.2035 20.9205C89.1505 20.8674 89.124 20.8056 89.124 20.7349C89.124 20.6907 89.1284 20.6421 89.1372 20.5891L92.4247 12.0126C92.46 11.9242 92.5086 11.8535 92.5705 11.8005C92.6323 11.7475 92.7251 11.721 92.8489 11.721H93.7502C93.8651 11.721 93.9535 11.7475 94.0154 11.8005C94.0861 11.8535 94.1391 11.9242 94.1744 12.0126L97.4486 20.5891C97.4663 20.6421 97.4751 20.6907 97.4751 20.7349C97.4751 20.8056 97.4486 20.8674 97.3956 20.9205C97.3425 20.9735 97.2807 21 97.21 21H96.5339C96.4279 21 96.3484 20.9735 96.2953 20.9205C96.2512 20.8674 96.2202 20.8188 96.2026 20.7747L95.4735 18.8923H91.1256L90.3965 20.7747C90.3877 20.8188 90.3568 20.8674 90.3038 20.9205C90.2507 20.9735 90.1712 21 90.0652 21H89.3891ZM91.51 17.7523H95.0891L93.2995 13.0466L91.51 17.7523ZM101.746 21.1326C100.977 21.1326 100.332 21.0177 99.8102 20.7879C99.2888 20.5493 98.8867 20.2444 98.6039 19.8733C98.33 19.4933 98.1841 19.0912 98.1665 18.667C98.1665 18.5963 98.193 18.5344 98.246 18.4814C98.3079 18.4196 98.3786 18.3886 98.4581 18.3886H99.1341C99.2402 18.3886 99.3197 18.4151 99.3727 18.4682C99.4258 18.5212 99.4611 18.583 99.4788 18.6537C99.523 18.8658 99.629 19.0779 99.7969 19.29C99.9737 19.4933 100.217 19.6656 100.526 19.807C100.844 19.9395 101.251 20.0058 101.746 20.0058C102.506 20.0058 103.062 19.8733 103.416 19.6081C103.778 19.3342 103.959 18.9719 103.959 18.5212C103.959 18.2119 103.862 17.9644 103.668 17.7789C103.482 17.5844 103.195 17.4121 102.806 17.2619C102.417 17.1117 101.913 16.9482 101.295 16.7714C100.65 16.5858 100.115 16.3826 99.6909 16.1617C99.2667 15.9407 98.9486 15.6668 98.7365 15.3398C98.5332 15.0128 98.4316 14.5975 98.4316 14.0938C98.4316 13.6166 98.5597 13.1924 98.816 12.8212C99.0723 12.4412 99.439 12.1408 99.9162 11.9198C100.402 11.6989 100.99 11.5884 101.679 11.5884C102.227 11.5884 102.704 11.6636 103.111 11.8138C103.526 11.9552 103.871 12.1496 104.145 12.397C104.419 12.6356 104.626 12.8963 104.768 13.1791C104.909 13.4531 104.984 13.7226 104.993 13.9877C104.993 14.0496 104.971 14.1114 104.927 14.1733C104.883 14.2263 104.812 14.2528 104.715 14.2528H104.012C103.95 14.2528 103.884 14.2352 103.813 14.1998C103.752 14.1645 103.703 14.0982 103.668 14.001C103.615 13.6387 103.411 13.3338 103.058 13.0863C102.704 12.8389 102.245 12.7152 101.679 12.7152C101.105 12.7152 100.636 12.8256 100.274 13.0466C99.9206 13.2675 99.7439 13.6121 99.7439 14.0805C99.7439 14.381 99.8279 14.6328 99.9958 14.8361C100.164 15.0305 100.429 15.2028 100.791 15.3531C101.153 15.5033 101.626 15.6624 102.209 15.8303C102.916 16.0247 103.495 16.2324 103.946 16.4533C104.397 16.6654 104.728 16.9349 104.94 17.2619C105.161 17.58 105.272 17.991 105.272 18.4947C105.272 19.0514 105.126 19.5286 104.834 19.9263C104.542 20.3151 104.132 20.6156 103.601 20.8277C103.08 21.0309 102.461 21.1326 101.746 21.1326ZM106.257 21C106.186 21 106.124 20.9735 106.071 20.9205C106.018 20.8674 105.991 20.8056 105.991 20.7349C105.991 20.6907 105.996 20.6421 106.005 20.5891L109.292 12.0126C109.327 11.9242 109.376 11.8535 109.438 11.8005C109.5 11.7475 109.593 11.721 109.716 11.721H110.618C110.733 11.721 110.821 11.7475 110.883 11.8005C110.953 11.8535 111.006 11.9242 111.042 12.0126L114.316 20.5891C114.334 20.6421 114.342 20.6907 114.342 20.7349C114.342 20.8056 114.316 20.8674 114.263 20.9205C114.21 20.9735 114.148 21 114.077 21H113.401C113.295 21 113.216 20.9735 113.163 20.9205C113.119 20.8674 113.088 20.8188 113.07 20.7747L112.341 18.8923H107.993L107.264 20.7747C107.255 20.8188 107.224 20.8674 107.171 20.9205C107.118 20.9735 107.039 21 106.933 21H106.257ZM108.377 17.7523H111.956L110.167 13.0466L108.377 17.7523ZM116.065 21C115.967 21 115.892 20.9735 115.839 20.9205C115.786 20.8586 115.76 20.7835 115.76 20.6951V12.0391C115.76 11.9419 115.786 11.8668 115.839 11.8138C115.892 11.7519 115.967 11.721 116.065 11.721H116.674C116.781 11.721 116.86 11.7475 116.913 11.8005C116.966 11.8447 116.997 11.8801 117.006 11.9066L121.407 18.667V12.0391C121.407 11.9419 121.433 11.8668 121.486 11.8138C121.539 11.7519 121.614 11.721 121.712 11.721H122.348C122.445 11.721 122.52 11.7519 122.573 11.8138C122.635 11.8668 122.666 11.9419 122.666 12.0391V20.6819C122.666 20.7702 122.635 20.8454 122.573 20.9072C122.52 20.9691 122.45 21 122.361 21H121.725C121.628 21 121.553 20.9735 121.5 20.9205C121.455 20.8674 121.424 20.8321 121.407 20.8144L117.019 14.1203V20.6951C117.019 20.7835 116.988 20.8586 116.926 20.9205C116.873 20.9735 116.798 21 116.701 21H116.065Z" fill="#fff"/>
+        <path d="M67.8822 40C67.7667 40 67.6723 39.9633 67.5988 39.8898C67.5253 39.8163 67.4885 39.7218 67.4885 39.6063V29.3708C67.4885 29.2553 67.5253 29.1608 67.5988 29.0874C67.6723 29.0139 67.7667 28.9771 67.8822 28.9771H72.685C73.5879 28.9771 74.328 29.1031 74.9054 29.355C75.4828 29.607 75.9079 29.9692 76.1809 30.4416C76.4643 30.9035 76.606 31.4546 76.606 32.095C76.606 32.4729 76.5326 32.8089 76.3856 33.1028C76.2491 33.3863 76.0759 33.6225 75.8659 33.8114C75.6665 34.0004 75.4775 34.1369 75.299 34.2209C75.698 34.4098 76.0497 34.7195 76.3541 35.1499C76.669 35.5804 76.8265 36.0843 76.8265 36.6616C76.8265 37.3545 76.669 37.9529 76.3541 38.4568C76.0497 38.9502 75.5982 39.3334 74.9999 39.6063C74.412 39.8688 73.6876 40 72.8268 40H67.8822ZM70.3073 37.9529H72.5118C72.9632 37.9529 73.3044 37.8217 73.5354 37.5592C73.7663 37.2968 73.8818 36.9976 73.8818 36.6616C73.8818 36.2942 73.7611 35.9845 73.5196 35.7326C73.2887 35.4806 72.9527 35.3546 72.5118 35.3546H70.3073V37.9529ZM70.3073 33.3548H72.3701C72.8005 33.3548 73.1207 33.2446 73.3307 33.0241C73.5511 32.8036 73.6614 32.5202 73.6614 32.1738C73.6614 31.8378 73.5511 31.5649 73.3307 31.3549C73.1207 31.1345 72.8005 31.0242 72.3701 31.0242H70.3073V33.3548ZM77.7924 40C77.7084 40 77.6296 39.9685 77.5562 39.9055C77.4932 39.832 77.4617 39.7533 77.4617 39.6693C77.4617 39.6168 77.4669 39.5696 77.4774 39.5276L81.178 29.418C81.2094 29.3026 81.2724 29.2028 81.3669 29.1188C81.4719 29.0244 81.6136 28.9771 81.7921 28.9771H84.1226C84.3011 28.9771 84.4376 29.0244 84.5321 29.1188C84.637 29.2028 84.7053 29.3026 84.7368 29.418L88.4216 39.5276C88.4426 39.5696 88.4531 39.6168 88.4531 39.6693C88.4531 39.7533 88.4163 39.832 88.3428 39.9055C88.2798 39.9685 88.2011 40 88.1066 40H86.1697C86.0123 40 85.8915 39.9633 85.8076 39.8898C85.7341 39.8058 85.6868 39.7323 85.6658 39.6693L85.0517 38.0631H80.8473L80.2489 39.6693C80.2279 39.7323 80.1806 39.8058 80.1072 39.8898C80.0337 39.9633 79.9077 40 79.7292 40H77.7924ZM81.4929 35.7956H84.4218L82.9416 31.6384L81.4929 35.7956ZM90.0879 40C89.9724 40 89.8779 39.9633 89.8045 39.8898C89.731 39.8163 89.6942 39.7218 89.6942 39.6063V29.3708C89.6942 29.2553 89.731 29.1608 89.8045 29.0874C89.8779 29.0139 89.9724 28.9771 90.0879 28.9771H92.198C92.3135 28.9771 92.408 29.0139 92.4814 29.0874C92.5549 29.1608 92.5917 29.2553 92.5917 29.3708V39.6063C92.5917 39.7218 92.5549 39.8163 92.4814 39.8898C92.408 39.9633 92.3135 40 92.198 40H90.0879ZM97.6184 40C97.5029 40 97.4084 39.9633 97.335 39.8898C97.2615 39.8163 97.2247 39.7218 97.2247 39.6063V31.4494H94.4218C94.3063 31.4494 94.2118 31.4127 94.1383 31.3392C94.0648 31.2552 94.0281 31.1607 94.0281 31.0557V29.3708C94.0281 29.2553 94.0648 29.1608 94.1383 29.0874C94.2118 29.0139 94.3063 28.9771 94.4218 28.9771H102.894C103.009 28.9771 103.104 29.0139 103.177 29.0874C103.251 29.1608 103.287 29.2553 103.287 29.3708V31.0557C103.287 31.1607 103.251 31.2552 103.177 31.3392C103.104 31.4127 103.009 31.4494 102.894 31.4494H100.091V39.6063C100.091 39.7218 100.054 39.8163 99.9804 39.8898C99.907 39.9633 99.8125 40 99.697 40H97.6184ZM109.332 40.1575C108.387 40.1575 107.558 40.0052 106.844 39.7008C106.141 39.3859 105.595 38.9082 105.207 38.2678C104.818 37.617 104.624 36.7929 104.624 35.7956V29.3708C104.624 29.2553 104.661 29.1608 104.734 29.0874C104.808 29.0139 104.902 28.9771 105.018 28.9771H107.049C107.164 28.9771 107.259 29.0139 107.332 29.0874C107.406 29.1608 107.443 29.2553 107.443 29.3708V35.7798C107.443 36.4622 107.605 36.9766 107.931 37.323C108.267 37.659 108.734 37.8269 109.332 37.8269C109.92 37.8269 110.377 37.659 110.702 37.323C111.038 36.9766 111.206 36.4622 111.206 35.7798V29.3708C111.206 29.2553 111.243 29.1608 111.316 29.0874C111.4 29.0139 111.495 28.9771 111.6 28.9771H113.647C113.752 28.9771 113.841 29.0139 113.915 29.0874C113.999 29.1608 114.041 29.2553 114.041 29.3708V35.7956C114.041 36.7929 113.846 37.617 113.458 38.2678C113.07 38.9082 112.524 39.3859 111.82 39.7008C111.117 40.0052 110.288 40.1575 109.332 40.1575ZM116.523 40C116.407 40 116.313 39.9633 116.239 39.8898C116.166 39.8163 116.129 39.7218 116.129 39.6063V29.3708C116.129 29.2553 116.166 29.1608 116.239 29.0874C116.313 29.0139 116.407 28.9771 116.523 28.9771H118.601C118.706 28.9771 118.795 29.0139 118.869 29.0874C118.953 29.1608 118.995 29.2553 118.995 29.3708V37.6222H123.75C123.866 37.6222 123.96 37.6642 124.034 37.7482C124.118 37.8217 124.16 37.9162 124.16 38.0316V39.6063C124.16 39.7218 124.118 39.8163 124.034 39.8898C123.96 39.9633 123.866 40 123.75 40H116.523ZM127.478 40C127.394 40 127.316 39.9685 127.242 39.9055C127.179 39.832 127.148 39.7533 127.148 39.6693C127.148 39.6168 127.153 39.5696 127.163 39.5276L130.864 29.418C130.895 29.3026 130.958 29.2028 131.053 29.1188C131.158 29.0244 131.3 28.9771 131.478 28.9771H133.809C133.987 28.9771 134.124 29.0244 134.218 29.1188C134.323 29.2028 134.391 29.3026 134.423 29.418L138.108 39.5276C138.129 39.5696 138.139 39.6168 138.139 39.6693C138.139 39.7533 138.102 39.832 138.029 39.9055C137.966 39.9685 137.887 40 137.793 40H135.856C135.698 40 135.578 39.9633 135.494 39.8898C135.42 39.8058 135.373 39.7323 135.352 39.6693L134.738 38.0631H130.533L129.935 39.6693C129.914 39.7323 129.867 39.8058 129.793 39.8898C129.72 39.9633 129.594 40 129.415 40H127.478ZM131.179 35.7956H134.108L132.628 31.6384L131.179 35.7956ZM139.774 40C139.669 40 139.574 39.9633 139.49 39.8898C139.417 39.8163 139.38 39.7218 139.38 39.6063V29.3708C139.38 29.2553 139.417 29.1608 139.49 29.0874C139.574 29.0139 139.669 28.9771 139.774 28.9771H141.475C141.643 28.9771 141.769 29.0244 141.853 29.1188C141.947 29.2028 142.005 29.2711 142.026 29.3236L144.797 34.2996L147.569 29.3236C147.6 29.2711 147.653 29.2028 147.726 29.1188C147.81 29.0244 147.941 28.9771 148.12 28.9771H149.805C149.92 28.9771 150.015 29.0139 150.088 29.0874C150.172 29.1608 150.214 29.2553 150.214 29.3708V39.6063C150.214 39.7218 150.172 39.8163 150.088 39.8898C150.015 39.9633 149.92 40 149.805 40H147.931C147.815 40 147.716 39.9633 147.632 39.8898C147.558 39.8163 147.521 39.7218 147.521 39.6063V33.7012L145.742 36.9923C145.7 37.0868 145.637 37.1708 145.553 37.2443C145.469 37.3178 145.354 37.3545 145.207 37.3545H144.388C144.241 37.3545 144.125 37.3178 144.041 37.2443C143.957 37.1708 143.889 37.0868 143.837 36.9923L142.057 33.7012V39.6063C142.057 39.7218 142.02 39.8163 141.947 39.8898C141.873 39.9633 141.779 40 141.664 40H139.774ZM151.775 40C151.691 40 151.613 39.9685 151.539 39.9055C151.476 39.832 151.445 39.7533 151.445 39.6693C151.445 39.6168 151.45 39.5696 151.46 39.5276L155.161 29.418C155.193 29.3026 155.256 29.2028 155.35 29.1188C155.455 29.0244 155.597 28.9771 155.775 28.9771H158.106C158.284 28.9771 158.421 29.0244 158.515 29.1188C158.62 29.2028 158.688 29.3026 158.72 29.418L162.405 39.5276C162.426 39.5696 162.436 39.6168 162.436 39.6693C162.436 39.7533 162.399 39.832 162.326 39.9055C162.263 39.9685 162.184 40 162.09 40H160.153C159.995 40 159.875 39.9633 159.791 39.8898C159.717 39.8058 159.67 39.7323 159.649 39.6693L159.035 38.0631H154.83L154.232 39.6693C154.211 39.7323 154.164 39.8058 154.09 39.8898C154.017 39.9633 153.891 40 153.712 40H151.775ZM155.476 35.7956H158.405L156.925 31.6384L155.476 35.7956ZM164.071 40C163.956 40 163.861 39.9633 163.788 39.8898C163.714 39.8163 163.677 39.7218 163.677 39.6063V29.3708C163.677 29.2553 163.714 29.1608 163.788 29.0874C163.861 29.0139 163.956 28.9771 164.071 28.9771H166.15C166.255 28.9771 166.344 29.0139 166.417 29.0874C166.501 29.1608 166.543 29.2553 166.543 29.3708V37.6222H171.299C171.414 37.6222 171.509 37.6642 171.582 37.7482C171.666 37.8217 171.708 37.9162 171.708 38.0316V39.6063C171.708 39.7218 171.666 39.8163 171.582 39.8898C171.509 39.9633 171.414 40 171.299 40H164.071ZM176.45 40C176.345 40 176.251 39.9633 176.167 39.8898C176.093 39.8163 176.057 39.7218 176.057 39.6063V29.3708C176.057 29.2553 176.093 29.1608 176.167 29.0874C176.251 29.0139 176.345 28.9771 176.45 28.9771H178.151C178.319 28.9771 178.445 29.0244 178.529 29.1188C178.623 29.2028 178.681 29.2711 178.702 29.3236L181.473 34.2996L184.245 29.3236C184.276 29.2711 184.329 29.2028 184.402 29.1188C184.486 29.0244 184.618 28.9771 184.796 28.9771H186.481C186.596 28.9771 186.691 29.0139 186.764 29.0874C186.848 29.1608 186.89 29.2553 186.89 29.3708V39.6063C186.89 39.7218 186.848 39.8163 186.764 39.8898C186.691 39.9633 186.596 40 186.481 40H184.607C184.492 40 184.392 39.9633 184.308 39.8898C184.234 39.8163 184.198 39.7218 184.198 39.6063V33.7012L182.418 36.9923C182.376 37.0868 182.313 37.1708 182.229 37.2443C182.145 37.3178 182.03 37.3545 181.883 37.3545H181.064C180.917 37.3545 180.802 37.3178 180.718 37.2443C180.634 37.1708 180.565 37.0868 180.513 36.9923L178.733 33.7012V39.6063C178.733 39.7218 178.697 39.8163 178.623 39.8898C178.55 39.9633 178.455 40 178.34 40H176.45ZM188.452 40C188.368 40 188.289 39.9685 188.216 39.9055C188.153 39.832 188.121 39.7533 188.121 39.6693C188.121 39.6168 188.126 39.5696 188.137 39.5276L191.837 29.418C191.869 29.3026 191.932 29.2028 192.026 29.1188C192.131 29.0244 192.273 28.9771 192.451 28.9771H194.782C194.96 28.9771 195.097 29.0244 195.191 29.1188C195.296 29.2028 195.365 29.3026 195.396 29.418L199.081 39.5276C199.102 39.5696 199.112 39.6168 199.112 39.6693C199.112 39.7533 199.076 39.832 199.002 39.9055C198.939 39.9685 198.86 40 198.766 40H196.829C196.672 40 196.551 39.9633 196.467 39.8898C196.393 39.8058 196.346 39.7323 196.325 39.6693L195.711 38.0631H191.507L190.908 39.6693C190.887 39.7323 190.84 39.8058 190.767 39.8898C190.693 39.9633 190.567 40 190.389 40H188.452ZM192.152 35.7956H195.081L193.601 31.6384L192.152 35.7956ZM200.747 40C200.632 40 200.537 39.9633 200.464 39.8898C200.39 39.8163 200.354 39.7218 200.354 39.6063V29.3708C200.354 29.2553 200.39 29.1608 200.464 29.0874C200.537 29.0139 200.632 28.9771 200.747 28.9771H204.841C205.87 28.9771 206.747 29.1451 207.471 29.481C208.196 29.8065 208.752 30.2894 209.14 30.9297C209.529 31.5596 209.739 32.3417 209.77 33.276C209.781 33.738 209.786 34.1421 209.786 34.4886C209.786 34.835 209.781 35.2339 209.77 35.6853C209.728 36.6616 209.518 37.47 209.14 38.1104C208.773 38.7507 208.232 39.2284 207.518 39.5433C206.815 39.8478 205.949 40 204.92 40H200.747ZM203.172 37.7324H204.841C205.293 37.7324 205.666 37.6642 205.96 37.5277C206.264 37.3808 206.49 37.155 206.637 36.8506C206.794 36.5462 206.878 36.1472 206.889 35.6538C206.91 35.3494 206.92 35.0764 206.92 34.835C206.931 34.5935 206.931 34.3521 206.92 34.1106C206.92 33.8692 206.91 33.6015 206.889 33.3075C206.868 32.5937 206.679 32.074 206.322 31.7486C205.975 31.4127 205.456 31.2447 204.763 31.2447H203.172V37.7324ZM210.765 40C210.681 40 210.602 39.9685 210.529 39.9055C210.466 39.832 210.434 39.7533 210.434 39.6693C210.434 39.6168 210.44 39.5696 210.45 39.5276L214.151 29.418C214.182 29.3026 214.245 29.2028 214.34 29.1188C214.445 29.0244 214.586 28.9771 214.765 28.9771H217.095C217.274 28.9771 217.41 29.0244 217.505 29.1188C217.61 29.2028 217.678 29.3026 217.709 29.418L221.394 39.5276C221.415 39.5696 221.426 39.6168 221.426 39.6693C221.426 39.7533 221.389 39.832 221.316 39.9055C221.253 39.9685 221.174 40 221.079 40H219.142C218.985 40 218.864 39.9633 218.78 39.8898C218.707 39.8058 218.66 39.7323 218.639 39.6693L218.024 38.0631H213.82L213.222 39.6693C213.201 39.7323 213.153 39.8058 213.08 39.8898C213.006 39.9633 212.88 40 212.702 40H210.765ZM214.466 35.7956H217.395L215.914 31.6384L214.466 35.7956ZM223.061 40C222.945 40 222.851 39.9633 222.777 39.8898C222.704 39.8163 222.667 39.7218 222.667 39.6063V29.3708C222.667 29.2553 222.704 29.1608 222.777 29.0874C222.851 29.0139 222.945 28.9771 223.061 28.9771H224.73C224.908 28.9771 225.034 29.0191 225.108 29.1031C225.192 29.1766 225.244 29.2343 225.265 29.2763L229.107 35.3389V29.3708C229.107 29.2553 229.144 29.1608 229.218 29.0874C229.291 29.0139 229.386 28.9771 229.501 28.9771H231.391C231.506 28.9771 231.601 29.0139 231.674 29.0874C231.748 29.1608 231.784 29.2553 231.784 29.3708V39.6063C231.784 39.7113 231.748 39.8058 231.674 39.8898C231.601 39.9633 231.506 40 231.391 40H229.706C229.538 40 229.412 39.958 229.328 39.874C229.254 39.79 229.207 39.7323 229.186 39.7008L225.344 33.8744V39.6063C225.344 39.7218 225.307 39.8163 225.234 39.8898C225.16 39.9633 225.066 40 224.95 40H223.061ZM234.379 40C234.263 40 234.169 39.9633 234.095 39.8898C234.022 39.8163 233.985 39.7218 233.985 39.6063V29.3708C233.985 29.2553 234.022 29.1608 234.095 29.0874C234.169 29.0139 234.263 28.9771 234.379 28.9771H236.489C236.604 28.9771 236.699 29.0139 236.772 29.0874C236.846 29.1608 236.883 29.2553 236.883 29.3708V39.6063C236.883 39.7218 236.846 39.8163 236.772 39.8898C236.699 39.9633 236.604 40 236.489 40H234.379Z" fill="#fff"/>
+      </svg>
+    </div>
+    <button class="btn-share" onclick="sharePage()" aria-label="Bagikan">
+      <span class="mi">share</span>
+    </button>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-img"
+         src="https://picsum.photos/seed/qurandonation99/860/460"
+         alt="Infaq Quran" loading="eager">
+    <div class="hero-overlay"></div>
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      <span>Campaign Aktif</span>
+    </div>
+    <div class="hero-days">
+      <span class="mi">schedule</span>
+      18 Hari Lagi
+    </div>
+  </section>
+
+  <!-- UNIFIED CONTENT -->
+  <div class="content">
+
+    <!-- Campaign info -->
+    <div class="section reveal">
+      <div class="org-badge">
+        <span class="mi">mosque</span>
+        Baitul Amal Madani
+      </div>
+      <h1 class="campaign-title">Infaq Quran untuk <em>Pesantren &amp; Masjid</em></h1>
+    </div>
+
+    <!-- Progress -->
+    <div class="section reveal">
+      <div class="prog-head">
+        <span class="prog-amount">Rp 115.902.784</span>
+        <span class="prog-pct">85%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="progBar"></div>
+      </div>
+      <div class="prog-foot">
+        <span class="prog-target">Target: <strong>Rp 135.000.000</strong></span>
+        <span class="prog-donors">
+          <span class="mi">group</span>
+          <strong>234</strong> Donatur
+        </span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-lbl">Quran Tersalurkan</div>
+          <div class="stat-val">
+            <span class="mi">auto_stories</span>
+            1.240 Quran
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lbl">Daerah Terjangkau</div>
+          <div class="stat-val">
+            <span class="mi">map</span>
+            12 Provinsi
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donate -->
+    <div class="section reveal" id="donateCard">
+      <div class="sec-label">
+        <span class="mi">volunteer_activism</span>
+        Pilih Nominal Infaq
+      </div>
+      <div class="amount-grid">
+        <button class="amt-btn" onclick="pickAmt(25000, this)">
+          <span class="av">Rp 25.000</span>
+          <span class="as">Infaq ¼ Al-Quran</span>
+        </button>
+        <button class="amt-btn" onclick="pickAmt(50000, this)">
+          <span class="av">Rp 50.000</span>
+          <span class="as">Infaq ½ Al-Quran</span>
+        </button>
+        <button class="amt-btn" onclick="pickAmt(100000, this)">
+          <span class="av">Rp 100.000</span>
+          <span class="as">Infaq 1 Al-Quran</span>
+        </button>
+        <button class="amt-btn" onclick="pickAmt(250000, this)">
+          <span class="av">Rp 250.000</span>
+          <span class="as">Infaq 3 Al-Quran</span>
+        </button>
+      </div>
+      <div class="divider-row">
+        <div class="div-line"></div>
+        <span class="div-txt">atau masukkan nominal lain</span>
+        <div class="div-line"></div>
+      </div>
+      <div class="inp-wrap">
+        <span class="inp-pfx">Rp</span>
+        <input type="text" class="amt-input" id="amtInput"
+               placeholder="0" inputmode="numeric" oninput="onInputAmt(this)">
+      </div>
+      <button class="btn-wa" onclick="doWA()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        Donasi Sekarang
+      </button>
+    </div>
+
+    <!-- About -->
+    <div class="section reveal">
+      <h2 class="sec-title">
+        <div class="sec-ico"><span class="mi">description</span></div>
+        Tentang Program
+      </h2>
+      <p class="about-p">
+        Program Infaq Quran merupakan ikhtiar Baitul Amal Madani dalam menyebarkan kalam Allah ke seluruh penjuru negeri. Kami hadir untuk memastikan setiap pesantren, masjid, dan musholla memiliki Al-Quran yang cukup dan layak.
+      </p>
+      <div class="about-quote">
+        "Sebaik-baik kalian adalah orang yang mempelajari Al-Quran dan mengajarkannya."<br>— HR. Bukhari
+      </div>
+      <p class="about-p">
+        Dana infaq Anda akan digunakan untuk pengadaan Al-Quran berkualitas, pelatihan guru mengaji, beasiswa santri berprestasi, serta pembangunan dan renovasi sarana ibadah yang memadai di daerah terpencil.
+      </p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="section reveal">
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('manfaat',this)">
+          <span class="mi">check_circle</span> Manfaat
+        </button>
+        <button class="tab-btn" onclick="switchTab('update',this)">
+          <span class="mi">article</span> Update
+        </button>
+        <button class="tab-btn" onclick="switchTab('donatur',this)">
+          <span class="mi">people</span> Donatur
+        </button>
+      </div>
+
+      <div id="tab-manfaat" class="tab-pane active">
+        <div class="benefit-grid">
+          <div class="benefit-card">
+            <div class="bi"><span class="mi">auto_stories</span></div>
+            <div class="bt">Distribusi Quran</div>
+            <div class="bd">Pengadaan & distribusi Al-Quran ke pesantren dan masjid terpencil</div>
+          </div>
+          <div class="benefit-card">
+            <div class="bi"><span class="mi">school</span></div>
+            <div class="bt">Pemberdayaan Guru</div>
+            <div class="bd">Pelatihan & honorarium guru mengaji berprestasi seluruh Indonesia</div>
+          </div>
+          <div class="benefit-card">
+            <div class="bi"><span class="mi">workspace_premium</span></div>
+            <div class="bt">Beasiswa Santri</div>
+            <div class="bd">Beasiswa pendidikan untuk santri kurang mampu namun berprestasi</div>
+          </div>
+          <div class="benefit-card">
+            <div class="bi"><span class="mi">mosque</span></div>
+            <div class="bt">Sarana Ibadah</div>
+            <div class="bd">Pembangunan & renovasi musholla dan masjid yang layak</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-update" class="tab-pane">
+        <div class="update-list">
+          <div class="update-item">
+            <img class="update-thumb" src="https://picsum.photos/seed/upd1/144/144" alt="" loading="lazy">
+            <div>
+              <div class="ud"><span class="mi">calendar_today</span> 5 Maret 2026</div>
+              <div class="ut">Distribusi 50 Quran ke Pesantren Al-Hikmah</div>
+              <div class="ux">Alhamdulillah, 50 Al-Quran telah diserahkan kepada santri Pesantren Al-Hikmah Bandung.</div>
+            </div>
+          </div>
+          <div class="donor-divider"></div>
+          <div class="update-item">
+            <img class="update-thumb" src="https://picsum.photos/seed/upd2/144/144" alt="" loading="lazy">
+            <div>
+              <div class="ud"><span class="mi">calendar_today</span> 28 Februari 2026</div>
+              <div class="ut">Pelatihan Guru Mengaji Angkatan ke-8</div>
+              <div class="ux">Sebanyak 25 guru mengaji mengikuti pelatihan metode tahsin terbaru.</div>
+            </div>
+          </div>
+          <div class="donor-divider"></div>
+          <div class="update-item">
+            <img class="update-thumb" src="https://picsum.photos/seed/upd3/144/144" alt="" loading="lazy">
+            <div>
+              <div class="ud"><span class="mi">calendar_today</span> 15 Februari 2026</div>
+              <div class="ut">Penyerahan Beasiswa kepada 20 Santri</div>
+              <div class="ux">20 santri berprestasi mendapatkan beasiswa pendidikan selama 1 tahun penuh.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-donatur" class="tab-pane">
+        <div class="donor-list" id="donorList"></div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section reveal">
+      <h2 class="sec-title">
+        <div class="sec-ico"><span class="mi">contact_support</span></div>
+        Pertanyaan Umum
+      </h2>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qt">Bagaimana cara berdonasi?</span>
+          <span class="faq-arr"><span class="mi">expand_more</span></span>
+        </button>
+        <div class="faq-a">
+          <p class="faq-at">Pilih atau masukkan nominal infaq, lalu klik "Donasi Sekarang". Anda akan diarahkan ke WhatsApp untuk konfirmasi dan panduan transfer ke rekening resmi Baitul Amal Madani.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qt">Bisakah atas nama orang lain?</span>
+          <span class="faq-arr"><span class="mi">expand_more</span></span>
+        </button>
+        <div class="faq-a">
+          <p class="faq-at">Tentu! Anda bisa berinfaq atas nama orang tua, keluarga, atau orang tersayang yang telah tiada. Sampaikan nama yang dikehendaki saat konfirmasi via WhatsApp.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qt">Bagaimana laporan penggunaan dana?</span>
+          <span class="faq-arr"><span class="mi">expand_more</span></span>
+        </button>
+        <div class="faq-a">
+          <p class="faq-at">Kami mengirimkan laporan rutin via WhatsApp kepada seluruh donatur, meliputi foto distribusi, jumlah Quran tersalurkan, dan dokumentasi kegiatan secara transparan.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qt">Berapa minimal donasi?</span>
+          <span class="faq-arr"><span class="mi">expand_more</span></span>
+        </button>
+        <div class="faq-a">
+          <p class="faq-at">Tidak ada minimal donasi. Setiap rupiah yang Anda infaqkan sangat berarti dan menjadi amal jariyah yang mengalirkan pahala tiada henti, insya Allah.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qt">Apakah donasi saya aman?</span>
+          <span class="faq-arr"><span class="mi">expand_more</span></span>
+        </button>
+        <div class="faq-a">
+          <p class="faq-at">Baitul Amal Madani terdaftar resmi dan beroperasi secara transparan. Seluruh dana dikelola dengan amanah dan dilaporkan secara berkala kepada donatur dan pihak berwenang.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.content -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="ft-logo">Baitul Amal Madani</div>
+    <div class="ft-sub">Bersama Amalkan Manfaat</div>
+    <div class="ft-links">
+      <a href="#" class="ft-link">Tentang Kami</a>
+      <a href="#" class="ft-link">Kebijakan Privasi</a>
+      <a href="#" class="ft-link">Kontak</a>
+    </div>
+    <div class="ft-copy">© 2026 Baitul Amal Madani. Semua hak dilindungi.</div>
+  </footer>
+
+</div><!-- /#app -->
+
+<!-- Float WA -->
+<button class="float-wa" id="floatWA" onclick="doWA()">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  </svg>
+  Hubungi Kami
+</button>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3031' : '';
+
+  function relTime(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'Baru saja';
+    if (m < 60) return m + ' menit lalu';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + ' jam lalu';
+    return Math.floor(h / 24) + ' hari lalu';
+  }
+
+  async function initPage() {
+    try {
+      const [c, donorsRes, updatesRes, faqsRes] = await Promise.all([
+        fetch(`${API_BASE}/api/campaign`).then(r => r.ok ? r.json() : null),
+        fetch(`${API_BASE}/api/donors?limit=10`, { headers: { 'x-api-key': window._apiKey || '' } }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_BASE}/api/updates`).then(r => r.ok ? r.json() : []),
+        fetch(`${API_BASE}/api/faqs`).then(r => r.ok ? r.json() : []),
+      ]);
+
+      if (c) {
+        window._bamCampaign = c;
+
+        const ct = document.querySelector('.campaign-title');
+        if (ct && c.namaCampaign) {
+          const parts = c.namaCampaign.split(' untuk ');
+          ct.innerHTML = parts.length >= 2
+            ? `${parts[0]} untuk <em>${parts.slice(1).join(' untuk ')}</em>`
+            : c.namaCampaign;
+        }
+
+        const aboutPs = document.querySelectorAll('.about-p');
+        if (aboutPs[0] && c.deskripsi) aboutPs[0].textContent = c.deskripsi;
+
+        const ob = document.querySelector('.org-badge');
+        if (ob) ob.innerHTML = `<span class="mi">mosque</span> ${c.namaOrg || ''}`;
+
+        const pct = c.target ? Math.min(100, Math.round((c.terkumpul / c.target) * 100)) : 0;
+        const pa = document.querySelector('.prog-amount');
+        const pp = document.querySelector('.prog-pct');
+        const pt = document.querySelector('.prog-target strong');
+        if (pa) pa.textContent = 'Rp ' + (c.terkumpul||0).toLocaleString('id-ID');
+        if (pp) pp.textContent = pct + '%';
+        if (pt) pt.textContent = 'Rp ' + (c.target||0).toLocaleString('id-ID');
+        setTimeout(() => {
+          const bar = document.getElementById('progBar');
+          if (bar) bar.style.width = pct + '%';
+        }, 400);
+
+        const statVals = document.querySelectorAll('.stat-val');
+        if (statVals[0]) statVals[0].innerHTML = `<span class="mi">auto_stories</span> ${(c.quranTersalurkan||0).toLocaleString('id-ID')} Quran`;
+        if (statVals[1]) statVals[1].innerHTML = `<span class="mi">map</span> ${c.provinsiTerjangkau||0} Provinsi`;
+
+        if (c.heroImageUrl) {
+          const hi = document.querySelector('.hero-img');
+          if (hi) hi.src = c.heroImageUrl;
+        }
+
+        if (c.tglSelesai) {
+          const days = Math.max(0, Math.round((new Date(c.tglSelesai) - new Date()) / 86400000));
+          const hd = document.querySelector('.hero-days');
+          if (hd) hd.innerHTML = `<span class="mi">schedule</span> ${days} Hari Lagi`;
+        }
+
+        window._waNumber = c.waNumber || '6282129334399';
+
+        if (c.presets && c.presets.length === 4) {
+          const btns = document.querySelectorAll('.amt-btn');
+          c.presets.forEach((p, i) => {
+            if (!btns[i]) return;
+            const av = btns[i].querySelector('.av');
+            const as = btns[i].querySelector('.as');
+            if (av) av.textContent = 'Rp ' + (p.amount||0).toLocaleString('id-ID');
+            if (as) as.textContent = p.label || '';
+            btns[i].onclick = () => pickAmt(p.amount, btns[i]);
+          });
+        }
+      }
+
+      if (donorsRes && donorsRes.total != null) {
+        const pd = document.querySelector('.prog-donors strong');
+        if (pd) pd.textContent = donorsRes.total.toLocaleString('id-ID');
+        if (donorsRes.data && donorsRes.data.length) {
+          window._storedDonors = donorsRes.data.slice(0, 10).map(d => ({
+            n: d.nama || 'Anonim',
+            a: Number(d.jumlah) || 0,
+            t: relTime(d.tanggal || new Date().toISOString()),
+            d: d.doa || '',
+          }));
+        }
+      }
+
+      const storedUpd = Array.isArray(updatesRes) ? updatesRes : [];
+      if (storedUpd.length) {
+        const ul = document.querySelector('#tab-update .update-list');
+        if (ul) {
+          const BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+          ul.innerHTML = storedUpd.map((u, i) => {
+            const tgl = new Date(u.tanggal);
+            const tglStr = isNaN(tgl.getTime()) ? u.tanggal : `${tgl.getDate()} ${BULAN[tgl.getMonth()]} ${tgl.getFullYear()}`;
+            const thumb = u.thumbnailUrl ? `<img class="update-thumb" src="${u.thumbnailUrl}" alt="" loading="lazy">` : '';
+            const divider = i > 0 ? '<div class="donor-divider"></div>' : '';
+            return `${divider}<div class="update-item">${thumb}<div>
+              <div class="ud"><span class="mi">calendar_today</span> ${tglStr}</div>
+              <div class="ut">${u.judul || ''}</div>
+              <div class="ux">${u.deskripsi || ''}</div>
+            </div></div>`;
+          }).join('');
+        }
+      }
+
+      const storedFaq = Array.isArray(faqsRes) ? faqsRes : [];
+      if (storedFaq.length) {
+        const faqSection = document.querySelector('.section:last-of-type');
+        if (faqSection) {
+          faqSection.querySelectorAll('.faq-item').forEach(el => el.remove());
+          storedFaq.forEach(f => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `<button class="faq-q" onclick="toggleFaq(this)">
+              <span class="faq-qt">${f.pertanyaan || ''}</span>
+              <span class="faq-arr"><span class="mi">expand_more</span></span>
+            </button>
+            <div class="faq-a"><p class="faq-at">${f.jawaban || ''}</p></div>`;
+            faqSection.appendChild(el);
+          });
+        }
+      }
+
+    } catch (err) {
+      console.warn('API tidak tersedia, gunakan data default:', err.message);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initPage);
+
+  const DONORS = [
+    { n:'Ahmad Fauzi',   a:100000, t:'2 menit lalu',   d:'Semoga berkah' },
+    { n:'Siti Rahma',    a:50000,  t:'15 menit lalu',  d:'Aamiin ya Allah' },
+    { n:'Anonim',        a:250000, t:'32 menit lalu',  d:'' },
+    { n:'Budi Santoso',  a:100000, t:'1 jam lalu',     d:'Untuk alm. Ibu' },
+    { n:'Nur Azizah',    a:25000,  t:'2 jam lalu',     d:'Barakallah' },
+    { n:'Anonim',        a:500000, t:'3 jam lalu',     d:'' },
+    { n:'Hendra W.',     a:75000,  t:'5 jam lalu',     d:'Semoga manfaat' },
+    { n:'Ratna Sari',    a:100000, t:'8 jam lalu',     d:"Lillahi ta'ala" },
+    { n:'Fajar Arif',    a:200000, t:'1 hari lalu',    d:'Aamiin' },
+    { n:'Dewi Lestari',  a:50000,  t:'1 hari lalu',    d:'Untuk orang tua' },
+  ];
+  const COLORS = ['#0F7B5C','#E9A020','#7c5cbf','#e85d75','#3d8a5e','#4895ef','#f77f00','#c77dff'];
+
+  function initials(n) {
+    if (n === 'Anonim') return '<span class="mi" style="font-size:20px">person</span>';
+    return n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  }
+  function rupiah(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+
+  function renderDonors() {
+    const data = window._storedDonors || DONORS;
+    const el = document.getElementById('donorList');
+    el.innerHTML = data.map((d, i) => {
+      const clr = d.n === 'Anonim' ? '#94a3b8' : COLORS[i % COLORS.length];
+      return `
+        <div class="donor-item">
+          <div class="d-avatar" style="background:${clr}">${initials(d.n)}</div>
+          <div>
+            <div class="d-name">${d.n}</div>
+            <div class="d-time">${d.t}</div>
+          </div>
+          <div class="d-right">
+            <div class="d-amount">${rupiah(d.a)}</div>
+            ${d.d ? `<div class="d-doa">"${d.d}"</div>` : ''}
+          </div>
+        </div>
+        ${i < data.length-1 ? '<div class="donor-divider"></div>' : ''}
+      `;
+    }).join('');
+  }
+
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+    if (id === 'donatur') renderDonors();
+  }
+
+  let chosen = 0;
+  function pickAmt(v, btn) {
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    chosen = v;
+    document.getElementById('amtInput').value = v.toLocaleString('id-ID');
+  }
+  function onInputAmt(inp) {
+    const raw = inp.value.replace(/\D/g,'');
+    inp.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+    chosen = raw ? parseInt(raw) : 0;
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+  }
+  function getAmt() {
+    const raw = document.getElementById('amtInput').value.replace(/\D/g,'');
+    return raw ? parseInt(raw) : chosen;
+  }
+
+  function doWA() {
+    const amt = getAmt();
+    if (!amt || amt < 1000) { showToast('Masukkan nominal infaq terlebih dahulu'); return; }
+    const msg = encodeURIComponent(
+      `Assalamualaikum, saya ingin berinfaq Quran sebesar ${rupiah(amt)}.\n\nMohon info rekening untuk transfer. Jazakallah khair`
+    );
+    window.open(`https://wa.me/${window._waNumber || '6282129334399'}?text=${msg}`, '_blank');
+  }
+
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const ans  = item.querySelector('.faq-a');
+    const open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(it => {
+      it.classList.remove('open');
+      it.querySelector('.faq-a').style.maxHeight = '0';
+    });
+    if (!open) {
+      item.classList.add('open');
+      ans.style.maxHeight = ans.scrollHeight + 'px';
+    }
+  }
+
+  function sharePage() {
+    if (navigator.share) {
+      navigator.share({ title:'Infaq Quran — Baitul Amal Madani', text:'Mari bergabung dalam program Infaq Quran!', url: location.href });
+    } else {
+      navigator.clipboard.writeText(location.href).then(() => showToast('Link berhasil disalin!'));
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function animateProg() {
+    setTimeout(() => { document.getElementById('progBar').style.width = '85.8%'; }, 400);
+  }
+
+  function initReveal() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('in');
+      else obs.observe(el);
+    });
+  }
+
+  function initFloatWA() {
+    const card = document.getElementById('donateCard');
+    const btn  = document.getElementById('floatWA');
+    const obs  = new IntersectionObserver(entries => {
+      btn.classList.toggle('visible', !entries[0].isIntersecting);
+    }, { threshold: 0 });
+    obs.observe(card);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderDonors();
+    animateProg();
+    initReveal();
+    initFloatWA();
+  });
+</script>
+</body>
+</html>

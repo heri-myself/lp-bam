@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Infaq Quran BAM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sidebar-w: 240px;
+      --topbar-h: 62px;
+      --primary:      #20A39C;
+      --primary-dark: #178a84;
+      --primary-light:#d9f0ef;
+      --primary-xlight:#f0fafa;
+      --sidebar-bg:   #0d2220;
+      --sidebar-text: rgba(255,255,255,.62);
+      --sidebar-active: rgba(32,163,156,.22);
+      --surface:      #ffffff;
+      --bg:           #f0f5f5;
+      --border:       #e2eeee;
+      --text-dark:    #0d2220;
+      --text-mid:     #3a5856;
+      --text-muted:   #7a9896;
+      --danger:       #ef4444;
+      --danger-light: #fee2e2;
+      --success:      #10b981;
+      --success-light:#d1fae5;
+      --warning:      #f59e0b;
+      --warning-light:#fef3c7;
+      --info:         #3b82f6;
+      --info-light:   #dbeafe;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
+      --sh: 0 1px 4px rgba(0,0,0,.07), 0 2px 12px rgba(0,0,0,.04);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      min-width: 1024px;
+    }
+
+    /* ── MATERIAL SYMBOLS ──────────────────────── */
+    .mi {
+      font-family: 'Material Symbols Rounded';
+      font-style: normal; font-weight: normal; line-height: 1;
+      font-size: inherit; letter-spacing: normal; text-transform: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      -webkit-font-smoothing: antialiased; user-select: none; vertical-align: middle;
+    }
+
+    /* ── LAYOUT ────────────────────────────────── */
+    .admin-layout { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ───────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--sidebar-bg);
+      position: fixed; top: 0; left: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      z-index: 100; overflow-y: auto; overflow-x: hidden;
+    }
+    .sb-logo {
+      padding: 20px 18px 16px;
+      display: flex; align-items: center; gap: 11px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .sb-logo-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--primary); display: flex; align-items: center;
+      justify-content: center; font-size: 22px; color: #fff; flex-shrink: 0;
+    }
+    .sb-logo-org {
+      font-size: 11.5px; font-weight: 700; color: #fff;
+      letter-spacing: -.1px; line-height: 1.2;
+    }
+    .sb-logo-label {
+      font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px;
+      text-transform: uppercase; letter-spacing: .6px;
+    }
+    .sb-nav { flex: 1; padding: 12px 0; }
+    .sb-section-label {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 1px;
+      color: rgba(255,255,255,.28); text-transform: uppercase;
+      padding: 14px 18px 6px;
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 18px; cursor: pointer;
+      color: var(--sidebar-text); font-size: 13.5px; font-weight: 500;
+      text-decoration: none; border-radius: 0;
+      transition: background .15s, color .15s;
+      position: relative;
+    }
+    .sb-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sb-item.active {
+      background: var(--sidebar-active); color: #fff;
+    }
+    .sb-item.active::before {
+      content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+      width: 3px; background: var(--primary); border-radius: 0 3px 3px 0;
+    }
+    .sb-item .mi { font-size: 20px; flex-shrink: 0; }
+    .sb-badge {
+      margin-left: auto; background: var(--primary);
+      color: #fff; font-size: 10px; font-weight: 700;
+      min-width: 20px; height: 20px; border-radius: 100px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 5px;
+    }
+    .sb-footer {
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .sb-footer button, .sb-footer label {
+      width: 100%; padding: 8px 12px;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.07); border: none;
+      border-radius: var(--r-sm); color: rgba(255,255,255,.65);
+      font-family: inherit; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+    }
+    .sb-footer button:hover, .sb-footer label:hover {
+      background: rgba(255,255,255,.12); color: #fff;
+    }
+    .sb-footer .mi { font-size: 17px; }
+
+    /* ── MAIN AREA ─────────────────────────────── */
+    .main-area {
+      margin-left: var(--sidebar-w);
+      flex: 1; display: flex; flex-direction: column; min-height: 100vh;
+    }
+
+    /* ── TOPBAR ────────────────────────────────── */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
+    }
+    .topbar-title { font-size: 17px; font-weight: 800; color: var(--text-dark); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-date { font-size: 12.5px; color: var(--text-muted); }
+    .status-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 100px;
+      font-size: 12px; font-weight: 700;
+    }
+    .status-pill.active { background: var(--success-light); color: #065f46; }
+    .status-pill.inactive { background: var(--danger-light); color: #991b1b; }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+    }
+    .status-pill.active .status-dot { background: var(--success); }
+    .status-pill.inactive .status-dot { background: var(--danger); }
+
+    /* ── CONTENT AREA ──────────────────────────── */
+    .content-area { flex: 1; padding: 26px 28px; overflow-y: auto; }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+
+    /* ── PAGE HEADER ───────────────────────────── */
+    .page-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .page-hd-left h2 { font-size: 20px; font-weight: 800; color: var(--text-dark); }
+    .page-hd-left p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── KPI CARDS ─────────────────────────────── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px; margin-bottom: 22px;
+    }
+    .kpi-card {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 18px; display: flex; align-items: flex-start; gap: 14px;
+      box-shadow: var(--sh); border: 1px solid var(--border);
+    }
+    .kpi-icon {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .kpi-label { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }
+    .kpi-value { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-top: 3px; letter-spacing: -.5px; }
+    .kpi-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── CHARTS ────────────────────────────────── */
+    .charts-row { display: grid; gap: 14px; margin-bottom: 14px; }
+    .charts-row-1 { grid-template-columns: 1fr; }
+    .charts-row-2 { grid-template-columns: 1fr 1fr; }
+    .chart-card {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 20px; box-shadow: var(--sh); border: 1px solid var(--border);
+    }
+    .chart-header {
+      font-size: 13.5px; font-weight: 700; color: var(--text-dark);
+      margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .chart-header span { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+    /* ── FORM STYLES ───────────────────────────── */
+    .form-card {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 22px 24px; margin-bottom: 16px;
+      box-shadow: var(--sh); border: 1px solid var(--border);
+    }
+    .form-card-title {
+      font-size: 14px; font-weight: 700; color: var(--text-dark);
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .form-card-title .mi { font-size: 18px; color: var(--primary); }
+    .form-grid { display: grid; gap: 14px; }
+    .form-grid-2 { grid-template-columns: 1fr 1fr; }
+    .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label {
+      font-size: 11.5px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .4px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: inherit; font-size: 13.5px; color: var(--text-dark);
+      background: #fafefe; transition: border-color .18s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--primary); background: #fff; }
+    .form-group textarea { resize: vertical; }
+    .form-actions {
+      display: flex; align-items: center; gap: 12px;
+      padding-top: 4px;
+    }
+    .preset-pair { display: flex; flex-direction: column; gap: 6px; }
+    .preset-pair-label {
+      font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px;
+    }
+
+    /* ── BUTTONS ───────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 16px; border-radius: var(--r-sm);
+      font-family: inherit; font-size: 13.5px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .15s;
+      white-space: nowrap; text-decoration: none;
+    }
+    .btn .mi { font-size: 18px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-ghost {
+      background: transparent; color: var(--text-mid);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; }
+    .btn-icon {
+      width: 32px; height: 32px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: var(--r-sm); border: 1.5px solid var(--border);
+      background: transparent; cursor: pointer; color: var(--text-muted);
+      font-size: 18px; transition: all .15s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-xlight); }
+    .btn-icon.danger:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-light); }
+
+    /* ── TOOLBAR ───────────────────────────────── */
+    .sec-toolbar {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .sec-toolbar .search-wrap {
+      position: relative; flex: 1; min-width: 200px; max-width: 280px;
+    }
+    .sec-toolbar .search-wrap .mi {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; color: var(--text-muted); pointer-events: none;
+    }
+    .sec-toolbar input[type="search"],
+    .sec-toolbar input[type="text"].search-input {
+      width: 100%; padding: 8px 12px 8px 36px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: inherit; font-size: 13px; background: var(--surface);
+      outline: none; transition: border-color .18s;
+    }
+    .sec-toolbar input:focus { border-color: var(--primary); }
+    .sec-toolbar select.filter-select {
+      padding: 8px 10px; border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); font-family: inherit; font-size: 13px;
+      background: var(--surface); cursor: pointer; outline: none;
+      color: var(--text-dark); min-width: 130px;
+    }
+    .sec-toolbar select:focus { border-color: var(--primary); }
+    .sec-toolbar .filter-input {
+      padding: 8px 10px; border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); font-family: inherit; font-size: 13px;
+      background: var(--surface); outline: none; width: 130px;
+    }
+    .sec-toolbar .filter-input:focus { border-color: var(--primary); }
+    .tb-spacer { flex: 1; }
+
+    /* ── TABLE ─────────────────────────────────── */
+    .table-wrap {
+      background: var(--surface); border-radius: var(--r-lg);
+      box-shadow: var(--sh); border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .table-scroll { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .5px;
+      padding: 11px 14px; border-bottom: 2px solid var(--border);
+      text-align: left; cursor: pointer; background: #fafefe;
+      white-space: nowrap; user-select: none;
+    }
+    .data-table th:hover { color: var(--primary); }
+    .data-table th.sorted-asc::after { content: ' ▲'; font-size: 9px; }
+    .data-table th.sorted-desc::after { content: ' ▼'; font-size: 9px; }
+    .data-table td {
+      padding: 11px 14px; border-bottom: 1px solid var(--border);
+      font-size: 13px; vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #f9fcfc; }
+    .data-table .text-right { text-align: right; }
+    .data-table .fw-bold { font-weight: 700; }
+    .donor-cell { display: flex; align-items: center; gap: 9px; }
+    .donor-avatar-sm {
+      width: 34px; height: 34px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .donor-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .text-muted { color: var(--text-muted) !important; }
+    .text-sm { font-size: 12px; }
+    .text-italic { font-style: italic; }
+    .action-btns { display: flex; align-items: center; gap: 6px; }
+    .table-empty {
+      text-align: center; padding: 48px 20px;
+      color: var(--text-muted); font-size: 13.5px;
+    }
+    .table-empty .mi { font-size: 40px; display: block; margin-bottom: 10px; opacity: .4; }
+
+    /* ── PAGINATION ────────────────────────────── */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text-muted);
+    }
+    .pagi-btns { display: flex; gap: 4px; }
+    .pagi-btn {
+      min-width: 32px; height: 32px; padding: 0 8px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      background: transparent; font-family: inherit; font-size: 13px;
+      cursor: pointer; color: var(--text-mid); transition: all .15s;
+    }
+    .pagi-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .pagi-btn.active {
+      background: var(--primary); border-color: var(--primary);
+      color: #fff; font-weight: 700;
+    }
+    .pagi-btn:disabled { opacity: .4; cursor: default; }
+
+    /* ── BADGE ─────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 100px;
+      font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .badge-baru    { background: var(--info-light);    color: #1d4ed8; }
+    .badge-loyal   { background: var(--success-light); color: #065f46; }
+    .badge-vip     { background: var(--warning-light); color: #92400e; }
+    .badge-active  { background: var(--success-light); color: #065f46; }
+    .badge-inactive{ background: var(--danger-light);  color: #991b1b; }
+
+    /* ── CARD (update/faq items) ───────────────── */
+    .item-list { display: flex; flex-direction: column; gap: 12px; }
+    .item-card {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 16px 18px; box-shadow: var(--sh);
+      border: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .item-card-thumb {
+      width: 72px; height: 72px; border-radius: 10px;
+      object-fit: cover; flex-shrink: 0; background: var(--primary-light);
+    }
+    .item-card-thumb-placeholder {
+      width: 72px; height: 72px; border-radius: 10px;
+      background: var(--primary-light); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; color: var(--primary);
+    }
+    .item-card-body { flex: 1; min-width: 0; }
+    .item-card-date { font-size: 11.5px; color: var(--text-muted); margin-bottom: 4px; }
+    .item-card-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+    .item-card-desc { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+    .item-card-actions { display: flex; gap: 6px; flex-shrink: 0; align-self: flex-start; }
+
+    /* FAQ list admin */
+    .faq-admin-item {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 16px 18px; box-shadow: var(--sh);
+      border: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .faq-order-btns { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+    .faq-order-btn {
+      width: 26px; height: 26px; border: 1.5px solid var(--border);
+      border-radius: 6px; background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--text-muted); transition: all .15s;
+    }
+    .faq-order-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .faq-admin-body { flex: 1; }
+    .faq-admin-q { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
+    .faq-admin-a { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+
+    /* ── STATS SECTION ─────────────────────────── */
+    .stats-segment-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px; margin-bottom: 22px;
+    }
+    .seg-card {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 20px; box-shadow: var(--sh); border: 1px solid var(--border);
+      text-align: center;
+    }
+    .seg-card .seg-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin: 0 auto 12px;
+    }
+    .seg-card.baru .seg-icon { background: var(--info-light); color: var(--info); }
+    .seg-card.loyal .seg-icon { background: var(--success-light); color: var(--success); }
+    .seg-card.vip .seg-icon { background: var(--warning-light); color: var(--warning); }
+    .seg-card .seg-label { font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    .seg-card .seg-count { font-size: 32px; font-weight: 900; color: var(--text-dark); margin: 6px 0; letter-spacing: -1px; }
+    .seg-card .seg-range { font-size: 11.5px; color: var(--text-muted); }
+    .seg-card .seg-avg { font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 6px; }
+    .seg-card .seg-total { font-size: 12px; color: var(--text-muted); }
+
+    /* ── MODAL ─────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 500; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; animation: fadein .18s ease; }
+    @keyframes fadein { from{opacity:0} to{opacity:1} }
+    .modal-box {
+      background: var(--surface); border-radius: var(--r-lg);
+      width: min(660px, 95vw); max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.22);
+      animation: slideup .22s ease;
+    }
+    @keyframes slideup { from{transform:translateY(16px);opacity:0} to{transform:none;opacity:1} }
+    .modal-header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 800; }
+    .modal-close {
+      width: 32px; height: 32px; border: none; background: transparent;
+      cursor: pointer; border-radius: var(--r-sm); color: var(--text-muted);
+      font-size: 22px; display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .modal-close:hover { background: var(--bg); }
+    .modal-body { padding: 20px 22px; }
+    .modal-footer {
+      padding: 14px 22px 18px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    }
+
+    /* ── TOAST ─────────────────────────────────── */
+    .admin-toast {
+      position: fixed; bottom: 22px; left: 50%; z-index: 600;
+      transform: translateX(-50%) translateY(10px);
+      padding: 11px 22px; border-radius: 100px;
+      font-size: 13.5px; font-weight: 600;
+      opacity: 0; transition: all .3s ease;
+      white-space: nowrap; pointer-events: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .admin-toast.success { background: #0d2220; color: #fff; }
+    .admin-toast.error { background: var(--danger); color: #fff; }
+    .admin-toast.info { background: var(--info); color: #fff; }
+    .admin-toast .mi { font-size: 18px; }
+
+    /* ── MISC ──────────────────────────────────── */
+    .divider-label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .divider-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .empty-state {
+      text-align: center; padding: 48px 20px;
+      background: var(--surface); border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+    }
+    .empty-state .mi { font-size: 44px; color: var(--primary-light); display: block; margin-bottom: 12px; }
+    .empty-state h4 { font-size: 15px; color: var(--text-dark); margin-bottom: 6px; }
+    .empty-state p { font-size: 13px; color: var(--text-muted); }
+    .hero-preview-wrap { margin-top: 10px; }
+    .hero-preview-wrap img { border-radius: var(--r-md); border: 1px solid var(--border); }
+
+    /* ── Image Picker Widget ─────────────────────────── */
+    .img-picker { display: flex; flex-direction: column; gap: 10px; }
+    .img-picker-dropzone {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 24px 16px; border: 2px dashed var(--border);
+      border-radius: var(--r-md); background: var(--bg);
+      cursor: pointer; transition: border-color .2s, background .2s;
+      text-align: center;
+    }
+    .img-picker-dropzone:hover, .img-picker-dropzone.drag-over {
+      border-color: var(--primary); background: #f0fdfc;
+    }
+    .img-picker-dropzone .mi { font-size: 32px; color: var(--primary-light); }
+    .img-picker-dropzone span.hint { font-size: 13px; color: var(--text-muted); }
+    .img-picker-dropzone input[type=file] { display: none; }
+    .img-picker-preview {
+      position: relative; display: none;
+      border-radius: var(--r-md); overflow: hidden;
+      border: 1px solid var(--border); background: var(--bg);
+    }
+    .img-picker-preview img {
+      display: block; width: 100%; max-height: 220px;
+      object-fit: cover;
+    }
+    .img-picker-preview .img-picker-clear {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,.55); color: #fff; border: none;
+      border-radius: 50%; width: 28px; height: 28px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; line-height: 1;
+    }
+    .img-picker-preview .img-picker-clear:hover { background: rgba(220,50,50,.8); }
+    .img-picker-uploading {
+      display: none; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .img-picker-uploading .spinner {
+      width: 16px; height: 16px; border: 2px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body>
+<div class="admin-layout">
+
+  <!-- ── SIDEBAR ──────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon"><span class="mi">auto_stories</span></div>
+      <div>
+        <div class="sb-logo-org">Baitul Amal Madani</div>
+        <div class="sb-logo-label">Admin Panel</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section-label">Menu Utama</div>
+      <a class="sb-item active" data-section="dashboard" onclick="navigate('dashboard')">
+        <span class="mi">dashboard</span> Dashboard
+      </a>
+      <a class="sb-item" data-section="settings" onclick="navigate('settings')">
+        <span class="mi">tune</span> Campaign Settings
+      </a>
+      <a class="sb-item" data-section="donors" onclick="navigate('donors')">
+        <span class="mi">people</span> Donor Management
+        <span class="sb-badge" id="donorCountBadge">0</span>
+      </a>
+      <div class="sb-section-label">Konten</div>
+      <a class="sb-item" data-section="updates" onclick="navigate('updates')">
+        <span class="mi">article</span> Program Updates
+      </a>
+      <a class="sb-item" data-section="faq" onclick="navigate('faq')">
+        <span class="mi">contact_support</span> FAQ
+      </a>
+      <div class="sb-section-label">Laporan</div>
+      <a class="sb-item" data-section="stats" onclick="navigate('stats')">
+        <span class="mi">bar_chart</span> Campaign Stats
+      </a>
+    </nav>
+
+    <div class="sb-footer">
+      <button onclick="previewData()">
+        <span class="mi">open_in_new</span> Preview Landing Page
+      </button>
+      <button onclick="exportAll()">
+        <span class="mi">download</span> Export Backup JSON
+      </button>
+      <label>
+        <span class="mi">upload</span> Import Backup JSON
+        <input type="file" accept=".json" onchange="importAll(event)" hidden>
+      </label>
+    </div>
+  </aside>
+
+  <!-- ── MAIN AREA ─────────────────────────────── -->
+  <div class="main-area">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbarDate"></span>
+        <div class="status-pill active" id="campaignStatusPill">
+          <span class="status-dot"></span>
+          <span id="campaignStatusLabel">Campaign Aktif</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content-area">
+
+      <!-- ── DASHBOARD ─────────────────────────── -->
+      <section id="sec-dashboard" class="content-section active">
+        <div class="page-hd">
+          <div class="page-hd-left">
+            <h2>Dashboard</h2>
+            <p>Ringkasan performa campaign hari ini</p>
+          </div>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#e0f5f4;color:#20A39C;"><span class="mi">payments</span></div>
+            <div>
+              <div class="kpi-label">Total Terkumpul</div>
+              <div class="kpi-value" id="kpi-terkumpul">Rp 0</div>
+              <div class="kpi-sub" id="kpi-terkumpul-sub">dari target Rp 0</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#dbeafe;color:#3b82f6;"><span class="mi">group</span></div>
+            <div>
+              <div class="kpi-label">Jumlah Donatur</div>
+              <div class="kpi-value" id="kpi-donatur">0</div>
+              <div class="kpi-sub" id="kpi-donatur-sub">donatur terdaftar</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#fef3c7;color:#f59e0b;"><span class="mi">trending_up</span></div>
+            <div>
+              <div class="kpi-label">Rata-rata Donasi</div>
+              <div class="kpi-value" id="kpi-avg">Rp 0</div>
+              <div class="kpi-sub">per donatur</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#d1fae5;color:#10b981;"><span class="mi">percent</span></div>
+            <div>
+              <div class="kpi-label">Target Tercapai</div>
+              <div class="kpi-value" id="kpi-pct">0%</div>
+              <div class="kpi-sub" id="kpi-pct-sub">dari target campaign</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#e0f5f4;color:#20A39C;"><span class="mi">auto_stories</span></div>
+            <div>
+              <div class="kpi-label">Quran Tersalurkan</div>
+              <div class="kpi-value" id="kpi-quran">0</div>
+              <div class="kpi-sub">Al-Quran didistribusikan</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#ede9fe;color:#7c3aed;"><span class="mi">map</span></div>
+            <div>
+              <div class="kpi-label">Provinsi Terjangkau</div>
+              <div class="kpi-value" id="kpi-provinsi">0</div>
+              <div class="kpi-sub">dari 38 provinsi Indonesia</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row charts-row-1">
+          <div class="chart-card">
+            <div class="chart-header">Tren Donasi (30 Hari Terakhir) <span id="chartTrendTotal"></span></div>
+            <canvas id="chartTrend" height="85"></canvas>
+          </div>
+        </div>
+        <div class="charts-row charts-row-2">
+          <div class="chart-card">
+            <div class="chart-header">Segmentasi Donatur</div>
+            <canvas id="chartDist" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">Top 5 Donatur</div>
+            <canvas id="chartTop" height="200"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CAMPAIGN SETTINGS ───────────────────── -->
+      <section id="sec-settings" class="content-section">
+        <div class="page-hd">
+          <div class="page-hd-left">
+            <h2>Campaign Settings</h2>
+            <p>Konfigurasi data dan tampilan landing page</p>
+          </div>
+        </div>
+
+        <form id="settingsForm" onsubmit="saveSettings(event)">
+          <div class="form-card">
+            <div class="form-card-title"><span class="mi">campaign</span>Informasi Campaign</div>
+            <div class="form-grid form-grid-2">
+              <div class="form-group">
+                <label>Nama Campaign</label>
+                <input type="text" id="s-namaCampaign" required>
+              </div>
+              <div class="form-group">
+                <label>Nama Organisasi</label>
+                <input type="text" id="s-namaOrg" required>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:14px">
+              <label>Deskripsi Campaign</label>
+              <textarea id="s-deskripsi" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-title"><span class="mi">flag</span>Target & Periode</div>
+            <div class="form-grid form-grid-3">
+              <div class="form-group">
+                <label>Target Amount (Rp)</label>
+                <input type="number" id="s-target" min="0" required>
+              </div>
+              <div class="form-group">
+                <label>Total Terkumpul (Rp)</label>
+                <input type="number" id="s-terkumpul" min="0">
+              </div>
+              <div class="form-group">
+                <label>Status Campaign</label>
+                <select id="s-status">
+                  <option value="active">Aktif</option>
+                  <option value="inactive">Nonaktif</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tanggal Mulai</label>
+                <input type="date" id="s-tglMulai">
+              </div>
+              <div class="form-group">
+                <label>Tanggal Selesai</label>
+                <input type="date" id="s-tglSelesai">
+              </div>
+              <div class="form-group">
+                <label>Nomor WhatsApp</label>
+                <input type="text" id="s-waNumber" placeholder="6281234567890">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-title"><span class="mi">bar_chart</span>Statistik Distribusi</div>
+            <div class="form-grid form-grid-2">
+              <div class="form-group">
+                <label>Quran Tersalurkan</label>
+                <input type="number" id="s-quranTersalurkan" min="0">
+              </div>
+              <div class="form-group">
+                <label>Provinsi Terjangkau</label>
+                <input type="number" id="s-provinsiTerjangkau" min="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-title"><span class="mi">paid</span>Preset Nominal Donasi</div>
+            <div class="form-grid form-grid-4" id="presetGrid"></div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-title"><span class="mi">image</span>Hero Image</div>
+            <div class="form-group">
+              <label>Gambar Banner</label>
+              <div id="heroPickerWrap"></div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <span class="mi">save</span> Simpan Pengaturan
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="resetSettings()">
+              Reset ke Default
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ── DONOR MANAGEMENT ───────────────────── -->
+      <section id="sec-donors" class="content-section">
+        <div class="page-hd">
+          <div class="page-hd-left">
+            <h2>Donor Management</h2>
+            <p>Kelola data donatur dan riwayat infaq</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddDonor()">
+            <span class="mi">add</span> Tambah Donatur
+          </button>
+        </div>
+
+        <!-- Toolbar / Filters -->
+        <div class="sec-toolbar">
+          <div class="search-wrap">
+            <span class="mi">search</span>
+            <input type="text" class="search-input" id="donorSearch" placeholder="Cari nama, email, kota..." oninput="onDonorSearch(this.value)">
+          </div>
+          <select class="filter-select" id="filterProvinsi" onchange="applyDonorFilter()">
+            <option value="">Semua Provinsi</option>
+          </select>
+          <select class="filter-select" id="filterKategori" onchange="applyDonorFilter()">
+            <option value="">Semua Kategori</option>
+            <option value="Baru">Baru</option>
+            <option value="Loyal">Loyal</option>
+            <option value="VIP">VIP</option>
+          </select>
+          <input class="filter-input" type="date" id="filterDateFrom" title="Dari tanggal" onchange="applyDonorFilter()">
+          <input class="filter-input" type="date" id="filterDateTo" title="Sampai tanggal" onchange="applyDonorFilter()">
+          <div class="tb-spacer"></div>
+          <button class="btn btn-ghost btn-sm" onclick="resetDonorFilters()">
+            <span class="mi">filter_alt_off</span> Reset
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+            <span class="mi">download</span> Export CSV
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:44px">#</th>
+                  <th onclick="sortDonors('nama')">Nama Donatur</th>
+                  <th onclick="sortDonors('email')">Email / No HP</th>
+                  <th onclick="sortDonors('provinsi')">Kota / Provinsi</th>
+                  <th onclick="sortDonors('jumlah')" style="text-align:right">Jumlah Infaq</th>
+                  <th onclick="sortDonors('tanggal')">Tanggal</th>
+                  <th>Doa / Pesan</th>
+                  <th onclick="sortDonors('kategori')">Kategori</th>
+                  <th style="width:80px">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="donorTbody">
+                <tr><td colspan="9"><div class="table-empty"><span class="mi">people</span>Belum ada data donatur</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" id="donorPagination"></div>
+        </div>
+      </section>
+
+      <!-- ── PROGRAM UPDATES ────────────────────── -->
+      <section id="sec-updates" class="content-section">
+        <div class="page-hd">
+          <div class="page-hd-left">
+            <h2>Program Updates</h2>
+            <p>Kelola berita dan update kegiatan program</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddUpdate()">
+            <span class="mi">add</span> Tambah Update
+          </button>
+        </div>
+        <div class="item-list" id="updateAdminList">
+          <div class="empty-state">
+            <span class="mi">article</span>
+            <h4>Belum ada update</h4>
+            <p>Klik tombol "Tambah Update" untuk menambahkan berita kegiatan</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FAQ MANAGEMENT ─────────────────────── -->
+      <section id="sec-faq" class="content-section">
+        <div class="page-hd">
+          <div class="page-hd-left">
+            <h2>FAQ Management</h2>
+            <p>Kelola pertanyaan umum di landing page</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddFaq()">
+            <span class="mi">add</span> Tambah FAQ
+          </button>
+        </div>
+        <div class="item-list" id="faqAdminList">
+          <div class="empty-state">
+            <span class="mi">contact_support</span>
+            <h4>Belum ada FAQ</h4>
+            <p>Klik tombol "Tambah FAQ" untuk menambahkan pertanyaan umum</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CAMPAIGN STATS ─────────────────────── -->
+      <section id="sec-stats" class="content-section">
+        <div class="page-hd">
+          <div class="page-hd-left">
+            <h2>Campaign Stats</h2>
+            <p>Analisa mendalam data donatur dan performa campaign</p>
+          </div>
+        </div>
+
+        <!-- Segment Cards -->
+        <div class="stats-segment-grid">
+          <div class="seg-card baru">
+            <div class="seg-icon"><span class="mi">person_add</span></div>
+            <div class="seg-label">Donatur Baru</div>
+            <div class="seg-count" id="stat-baru-count">0</div>
+            <div class="seg-range">Infaq &lt; Rp 100.000</div>
+            <div class="seg-avg" id="stat-baru-avg">avg Rp 0</div>
+            <div class="seg-total" id="stat-baru-total"></div>
+          </div>
+          <div class="seg-card loyal">
+            <div class="seg-icon"><span class="mi">favorite</span></div>
+            <div class="seg-label">Donatur Loyal</div>
+            <div class="seg-count" id="stat-loyal-count">0</div>
+            <div class="seg-range">Rp 100.000 – 500.000</div>
+            <div class="seg-avg" id="stat-loyal-avg">avg Rp 0</div>
+            <div class="seg-total" id="stat-loyal-total"></div>
+          </div>
+          <div class="seg-card vip">
+            <div class="seg-icon"><span class="mi">workspace_premium</span></div>
+            <div class="seg-label">Donatur VIP</div>
+            <div class="seg-count" id="stat-vip-count">0</div>
+            <div class="seg-range">Infaq &gt; Rp 500.000</div>
+            <div class="seg-avg" id="stat-vip-avg">avg Rp 0</div>
+            <div class="seg-total" id="stat-vip-total"></div>
+          </div>
+        </div>
+
+        <!-- Province Table + Chart -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="table-wrap" style="box-shadow:var(--sh)">
+            <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
+              <div style="font-size:14px;font-weight:700;color:var(--text-dark)">Donatur per Provinsi</div>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Provinsi</th>
+                    <th style="text-align:right">Donatur</th>
+                    <th style="text-align:right">Total</th>
+                    <th style="text-align:right">Rata-rata</th>
+                  </tr>
+                </thead>
+                <tbody id="provinsiStatsTbody">
+                  <tr><td colspan="4"><div class="table-empty" style="padding:24px"><span class="mi" style="font-size:28px">map</span>Belum ada data</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">Donasi per Provinsi (Top 10)</div>
+            <canvas id="chartProvinsi" height="220"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly donation chart -->
+        <div class="chart-card">
+          <div class="chart-header">Distribusi Nominal Donasi</div>
+          <canvas id="chartAmtDist" height="80"></canvas>
+        </div>
+      </section>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-area -->
+</div><!-- /admin-layout -->
+
+<!-- ── MODAL ──────────────────────────────────── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <h3 id="modalTitle">Modal</h3>
+      <button class="modal-close" onclick="closeModal()"><span class="mi">close</span></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────── -->
+<div class="admin-toast success" id="adminToast"></div>
+
+<!-- ── SCRIPT ─────────────────────────────────── -->
+<script>
+/* ═══════════════════════════════════════════════
+   CONSTANTS & DEFAULTS
+═══════════════════════════════════════════════ */
+const SECTION_TITLES = {
+  dashboard: 'Dashboard',
+  settings:  'Campaign Settings',
+  donors:    'Donor Management',
+  updates:   'Program Updates',
+  faq:       'FAQ',
+  stats:     'Campaign Stats',
+};
+
+const PROVINCES_ID = [
+  'Aceh','Sumatera Utara','Sumatera Barat','Riau','Kepulauan Riau','Jambi',
+  'Sumatera Selatan','Bangka Belitung','Bengkulu','Lampung',
+  'DKI Jakarta','Jawa Barat','Banten','Jawa Tengah','DI Yogyakarta','Jawa Timur',
+  'Bali','Nusa Tenggara Barat','Nusa Tenggara Timur',
+  'Kalimantan Barat','Kalimantan Tengah','Kalimantan Selatan','Kalimantan Timur','Kalimantan Utara',
+  'Sulawesi Utara','Gorontalo','Sulawesi Tengah','Sulawesi Selatan','Sulawesi Barat','Sulawesi Tenggara',
+  'Maluku','Maluku Utara','Papua Barat','Papua','Papua Tengah','Papua Pegunungan','Papua Selatan','Papua Barat Daya'
+];
+
+const AVATAR_COLORS = ['#20A39C','#e07b39','#7c5cbf','#e85d75','#3d8a5e','#4895ef','#f77f00','#c77dff'];
+
+/* ── API CONFIG ───────────────────────────────── */
+// Auto-detect: gunakan localhost:3031 saat dev, relative URL saat production
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:3031' : '';
+const API_KEY  = 'bam-secret-2026';
+
+const DEFAULT_CAMPAIGN = {
+  namaCampaign: 'Infaq Quran untuk Pesantren & Masjid',
+  namaOrg: 'Baitul Amal Madani',
+  deskripsi: 'Program Infaq Quran merupakan ikhtiar Baitul Amal Madani dalam menyebarkan kalam Allah ke seluruh penjuru negeri.',
+  target: 135000000,
+  terkumpul: 115902784,
+  tglMulai: '2026-02-01',
+  tglSelesai: '2026-03-27',
+  waNumber: '6282129334399',
+  status: 'active',
+  presets: [
+    { amount: 25000,  label: 'Infaq ¼ Al-Quran' },
+    { amount: 50000,  label: 'Infaq ½ Al-Quran' },
+    { amount: 100000, label: 'Infaq 1 Al-Quran'  },
+    { amount: 250000, label: 'Infaq 3 Al-Quran'  },
+  ],
+  heroImageUrl: 'https://picsum.photos/seed/qurandonation99/860/460',
+  quranTersalurkan: 1240,
+  provinsiTerjangkau: 12,
+};
+
+const DEFAULT_DONORS = [
+  { nama:'Ahmad Fauzi',   email:'ahmad@email.com',     phone:'081234567890',  kota:'Bandung',      provinsi:'Jawa Barat',      jumlah:100000, tanggal:'2026-03-09T10:02:00.000Z', doa:'Semoga berkah' },
+  { nama:'Siti Rahma',    email:'siti@email.com',      phone:'082345678901',  kota:'Jakarta',      provinsi:'DKI Jakarta',     jumlah:50000,  tanggal:'2026-03-09T09:45:00.000Z', doa:'Aamiin ya Allah' },
+  { nama:'Anonim',        email:'',                    phone:'',              kota:'',             provinsi:'',                jumlah:250000, tanggal:'2026-03-09T09:28:00.000Z', doa:'' },
+  { nama:'Budi Santoso',  email:'budi@email.com',      phone:'083456789012',  kota:'Surabaya',     provinsi:'Jawa Timur',      jumlah:100000, tanggal:'2026-03-09T09:00:00.000Z', doa:'Untuk alm. Ibu' },
+  { nama:'Nur Azizah',    email:'nur@email.com',       phone:'084567890123',  kota:'Yogyakarta',   provinsi:'DI Yogyakarta',   jumlah:25000,  tanggal:'2026-03-09T08:00:00.000Z', doa:'Barakallah' },
+  { nama:'Anonim',        email:'',                    phone:'',              kota:'',             provinsi:'',                jumlah:500000, tanggal:'2026-03-09T07:00:00.000Z', doa:'' },
+  { nama:'Hendra W.',     email:'hendra@email.com',    phone:'085678901234',  kota:'Semarang',     provinsi:'Jawa Tengah',     jumlah:75000,  tanggal:'2026-03-09T05:00:00.000Z', doa:'Semoga manfaat' },
+  { nama:'Ratna Sari',    email:'ratna@email.com',     phone:'086789012345',  kota:'Medan',        provinsi:'Sumatera Utara',  jumlah:100000, tanggal:'2026-03-09T02:00:00.000Z', doa:"Lillahi ta'ala" },
+  { nama:'Fajar Arif',    email:'fajar@email.com',     phone:'087890123456',  kota:'Makassar',     provinsi:'Sulawesi Selatan',jumlah:200000, tanggal:'2026-03-08T12:00:00.000Z', doa:'Aamiin' },
+  { nama:'Dewi Lestari',  email:'dewi@email.com',      phone:'088901234567',  kota:'Denpasar',     provinsi:'Bali',            jumlah:50000,  tanggal:'2026-03-08T10:00:00.000Z', doa:'Untuk orang tua' },
+  { nama:'Rizki Pratama', email:'rizki@email.com',     phone:'089012345678',  kota:'Palembang',    provinsi:'Sumatera Selatan',jumlah:150000, tanggal:'2026-03-08T08:00:00.000Z', doa:'Jariyah keluarga' },
+  { nama:'Aisyah Putri',  email:'aisyah@email.com',    phone:'081123456789',  kota:'Pekanbaru',    provinsi:'Riau',            jumlah:300000, tanggal:'2026-03-07T15:00:00.000Z', doa:'Semoga diridhai' },
+  { nama:'Taufik Hidayat',email:'taufik@email.com',    phone:'082234567890',  kota:'Banjarmasin',  provinsi:'Kalimantan Selatan',jumlah:75000, tanggal:'2026-03-07T12:00:00.000Z', doa:'' },
+  { nama:'Yuni Astuti',   email:'yuni@email.com',      phone:'083345678901',  kota:'Pontianak',    provinsi:'Kalimantan Barat',jumlah:100000, tanggal:'2026-03-07T09:00:00.000Z', doa:'Barakallah fiikum' },
+  { nama:'Anonim',        email:'',                    phone:'',              kota:'',             provinsi:'',                jumlah:1000000,tanggal:'2026-03-06T20:00:00.000Z', doa:'' },
+];
+
+const DEFAULT_UPDATES = [
+  { tanggal:'2026-03-05', judul:'Distribusi 50 Quran ke Pesantren Al-Hikmah', deskripsi:'Alhamdulillah, 50 Al-Quran telah diserahkan kepada santri Pesantren Al-Hikmah Bandung. Semoga bermanfaat.', thumbnailUrl:'https://picsum.photos/seed/upd1/144/144' },
+  { tanggal:'2026-02-28', judul:'Pelatihan Guru Mengaji Angkatan ke-8', deskripsi:'Sebanyak 25 guru mengaji mengikuti pelatihan metode tahsin terbaru bersama ustadz hafizh nasional.', thumbnailUrl:'https://picsum.photos/seed/upd2/144/144' },
+  { tanggal:'2026-02-15', judul:'Penyerahan Beasiswa kepada 20 Santri', deskripsi:'20 santri berprestasi mendapatkan beasiswa pendidikan selama 1 tahun penuh dari program Infaq Quran.', thumbnailUrl:'https://picsum.photos/seed/upd3/144/144' },
+];
+
+const DEFAULT_FAQS = [
+  { pertanyaan:'Bagaimana cara berdonasi?', jawaban:'Pilih atau masukkan nominal infaq, lalu klik "Donasi Sekarang". Anda akan diarahkan ke WhatsApp untuk konfirmasi dan panduan transfer ke rekening resmi Baitul Amal Madani.' },
+  { pertanyaan:'Bisakah atas nama orang lain?', jawaban:'Tentu! Anda bisa berinfaq atas nama orang tua, keluarga, atau orang tersayang yang telah tiada. Sampaikan nama yang dikehendaki saat konfirmasi via WhatsApp.' },
+  { pertanyaan:'Bagaimana laporan penggunaan dana?', jawaban:'Kami mengirimkan laporan rutin via WhatsApp kepada seluruh donatur, meliputi foto distribusi, jumlah Quran tersalurkan, dan dokumentasi kegiatan secara transparan.' },
+  { pertanyaan:'Berapa minimal donasi?', jawaban:'Tidak ada minimal donasi. Setiap rupiah yang Anda infaqkan sangat berarti dan menjadi amal jariyah yang mengalirkan pahala tiada henti, insya Allah.' },
+  { pertanyaan:'Apakah donasi saya aman?', jawaban:'Baitul Amal Madani terdaftar resmi dan beroperasi secara transparan. Seluruh dana dikelola dengan amanah dan dilaporkan secara berkala kepada donatur dan pihak berwenang.' },
+];
+
+/* ═══════════════════════════════════════════════
+   API HELPERS + IN-MEMORY STATE
+═══════════════════════════════════════════════ */
+let _campaign = { ...DEFAULT_CAMPAIGN };
+let _donors   = [];
+let _updates  = [];
+let _faqs     = [];
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, ...(opts.headers || {}) },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+// Synchronous GET (returns in-memory state)
+function getCampaign() { return _campaign; }
+function getDonors()   { return _donors; }
+function getUpdates()  { return _updates; }
+function getFaqs()     { return _faqs; }
+
+// Async SAVE for campaign (other entities use direct API calls in CRUD functions)
+async function saveCampaign(data) {
+  _campaign = { ...data, updatedAt: new Date().toISOString() };
+  await apiFetch('/api/campaign', { method: 'PUT', body: JSON.stringify(data) });
+}
+
+/* ═══════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════ */
+function genId(prefix) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+function rupiah(n) {
+  return 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+}
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+}
+function getKategori(jumlah) {
+  if (jumlah > 500000) return 'VIP';
+  if (jumlah >= 100000) return 'Loyal';
+  return 'Baru';
+}
+function initials(name) {
+  if (!name || name === 'Anonim') return '?';
+  return name.trim().split(/\s+/).map(w => w[0] || '').join('').toUpperCase().slice(0, 2);
+}
+function avatarColor(name) {
+  let h = 0;
+  for (const c of (name || '')) h = ((h << 5) - h) + c.charCodeAt(0);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function updateDonorCountBadge() {
+  document.getElementById('donorCountBadge').textContent = _donors.length;
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function navigate(sectionId) {
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.section === sectionId);
+  });
+  document.getElementById(`sec-${sectionId}`).classList.add('active');
+  document.getElementById('topbarTitle').textContent = SECTION_TITLES[sectionId];
+
+  if (sectionId === 'dashboard') renderDashboard();
+  if (sectionId === 'settings')  loadSettingsForm();
+  if (sectionId === 'donors')    renderDonorTable();
+  if (sectionId === 'updates')   renderUpdateAdmin();
+  if (sectionId === 'faq')       renderFaqAdmin();
+  if (sectionId === 'stats')     renderStats();
+}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════ */
+let chartTrendInst, chartDistInst, chartTopInst;
+
+function renderDashboard() {
+  const c = getCampaign();
+  const donors = getDonors();
+  const totalDonors = donors.length;
+  const totalAmt = donors.reduce((s, d) => s + (d.jumlah || 0), 0);
+  const avg = totalDonors ? Math.round(totalAmt / totalDonors) : 0;
+  const pct = c.target ? Math.min(100, Math.round((c.terkumpul / c.target) * 100)) : 0;
+
+  document.getElementById('kpi-terkumpul').textContent = rupiah(c.terkumpul);
+  document.getElementById('kpi-terkumpul-sub').textContent = `dari target ${rupiah(c.target)}`;
+  document.getElementById('kpi-donatur').textContent = totalDonors.toLocaleString('id-ID');
+  document.getElementById('kpi-donatur-sub').textContent = `donatur terdaftar`;
+  document.getElementById('kpi-avg').textContent = rupiah(avg);
+  document.getElementById('kpi-pct').textContent = pct + '%';
+  document.getElementById('kpi-pct-sub').textContent = `dari target campaign`;
+  document.getElementById('kpi-quran').textContent = (c.quranTersalurkan || 0).toLocaleString('id-ID');
+  document.getElementById('kpi-provinsi').textContent = c.provinsiTerjangkau || 0;
+
+  // Update campaign status pill
+  const pill = document.getElementById('campaignStatusPill');
+  const label = document.getElementById('campaignStatusLabel');
+  pill.className = `status-pill ${c.status === 'active' ? 'active' : 'inactive'}`;
+  label.textContent = c.status === 'active' ? 'Campaign Aktif' : 'Campaign Nonaktif';
+
+  renderChartTrend(donors);
+  renderChartDist(donors);
+  renderChartTop(donors);
+}
+
+function renderChartTrend(donors) {
+  // Build last 30 days map
+  const days = {};
+  const now = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    days[d.toISOString().slice(0, 10)] = 0;
+  }
+  donors.forEach(d => {
+    const key = (d.tanggal || '').slice(0, 10);
+    if (days[key] !== undefined) days[key] += (d.jumlah || 0);
+  });
+
+  const labels = Object.keys(days).map(k => {
+    const parts = k.split('-'); return `${parts[2]}/${parts[1]}`;
+  });
+  const data = Object.values(days);
+  const total = data.reduce((s, v) => s + v, 0);
+  document.getElementById('chartTrendTotal').textContent = rupiah(total);
+
+  if (chartTrendInst) chartTrendInst.destroy();
+  chartTrendInst = new Chart(document.getElementById('chartTrend'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: '#20A39C',
+        backgroundColor: 'rgba(32,163,156,.1)',
+        fill: true, tension: 0.4,
+        pointRadius: 3, pointHoverRadius: 6,
+        pointBackgroundColor: '#20A39C',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: v => 'Rp ' + (v/1000).toFixed(0) + 'k', font: { size: 11 } } },
+        x: { ticks: { font: { size: 10 }, maxRotation: 45 } },
+      }
+    }
+  });
+}
+
+function renderChartDist(donors) {
+  const baru  = donors.filter(d => d.jumlah < 100000).length;
+  const loyal = donors.filter(d => d.jumlah >= 100000 && d.jumlah <= 500000).length;
+  const vip   = donors.filter(d => d.jumlah > 500000).length;
+
+  if (chartDistInst) chartDistInst.destroy();
+  chartDistInst = new Chart(document.getElementById('chartDist'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Baru (<100k)', 'Loyal (100k–500k)', 'VIP (>500k)'],
+      datasets: [{
+        data: [baru, loyal, vip],
+        backgroundColor: ['#3b82f6', '#20A39C', '#f59e0b'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      cutout: '62%',
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
+    }
+  });
+}
+
+function renderChartTop(donors) {
+  const sorted = [...donors].sort((a, b) => (b.jumlah||0) - (a.jumlah||0)).slice(0, 5);
+  if (chartTopInst) chartTopInst.destroy();
+  chartTopInst = new Chart(document.getElementById('chartTop'), {
+    type: 'bar',
+    data: {
+      labels: sorted.map(d => d.nama.length > 13 ? d.nama.slice(0, 13) + '…' : d.nama),
+      datasets: [{
+        data: sorted.map(d => d.jumlah || 0),
+        backgroundColor: sorted.map((_, i) => AVATAR_COLORS[i % AVATAR_COLORS.length]),
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { callback: v => 'Rp ' + (v/1000).toFixed(0) + 'k', font: { size: 11 } } },
+        y: { ticks: { font: { size: 12 } } },
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   CAMPAIGN SETTINGS
+═══════════════════════════════════════════════ */
+function loadSettingsForm() {
+  const c = getCampaign();
+  document.getElementById('s-namaCampaign').value = c.namaCampaign || '';
+  document.getElementById('s-namaOrg').value = c.namaOrg || '';
+  document.getElementById('s-deskripsi').value = c.deskripsi || '';
+  document.getElementById('s-target').value = c.target || '';
+  document.getElementById('s-terkumpul').value = c.terkumpul || '';
+  document.getElementById('s-status').value = c.status || 'active';
+  document.getElementById('s-tglMulai').value = c.tglMulai || '';
+  document.getElementById('s-tglSelesai').value = c.tglSelesai || '';
+  document.getElementById('s-waNumber').value = c.waNumber || '';
+  document.getElementById('s-quranTersalurkan').value = c.quranTersalurkan || '';
+  document.getElementById('s-provinsiTerjangkau').value = c.provinsiTerjangkau || '';
+  // Hero image picker — inject widget HTML if not yet rendered
+  const heroWrap = document.getElementById('heroPickerWrap');
+  if (heroWrap && !document.getElementById('picker-s-heroImageUrl')) {
+    heroWrap.innerHTML = imagePicker('s-heroImageUrl');
+  }
+  setImagePicker('s-heroImageUrl', c.heroImageUrl || '');
+  renderPresetGrid(c.presets || DEFAULT_CAMPAIGN.presets);
+}
+
+function renderPresetGrid(presets) {
+  const grid = document.getElementById('presetGrid');
+  grid.innerHTML = presets.map((p, i) => `
+    <div class="preset-pair">
+      <div class="preset-pair-label">Preset ${i + 1}</div>
+      <div class="form-group" style="margin-bottom:6px">
+        <label>Nominal (Rp)</label>
+        <input type="number" id="preset-amt-${i}" value="${p.amount}" min="0">
+      </div>
+      <div class="form-group">
+        <label>Keterangan</label>
+        <input type="text" id="preset-lbl-${i}" value="${escHtml(p.label)}">
+      </div>
+    </div>
+  `).join('');
+}
+
+async function saveSettings(e) {
+  e.preventDefault();
+  const c = getCampaign();
+  const presets = [0, 1, 2, 3].map(i => ({
+    amount: parseInt(document.getElementById(`preset-amt-${i}`).value) || 0,
+    label: document.getElementById(`preset-lbl-${i}`).value,
+  }));
+  const updated = {
+    ...c,
+    namaCampaign: document.getElementById('s-namaCampaign').value,
+    namaOrg: document.getElementById('s-namaOrg').value,
+    deskripsi: document.getElementById('s-deskripsi').value,
+    target: parseInt(document.getElementById('s-target').value) || 0,
+    terkumpul: parseInt(document.getElementById('s-terkumpul').value) || 0,
+    status: document.getElementById('s-status').value,
+    tglMulai: document.getElementById('s-tglMulai').value,
+    tglSelesai: document.getElementById('s-tglSelesai').value,
+    waNumber: document.getElementById('s-waNumber').value,
+    quranTersalurkan: parseInt(document.getElementById('s-quranTersalurkan').value) || 0,
+    provinsiTerjangkau: parseInt(document.getElementById('s-provinsiTerjangkau').value) || 0,
+    heroImageUrl: getImagePicker('s-heroImageUrl'),
+    presets,
+  };
+  try {
+    await saveCampaign(updated);
+    showToast('Pengaturan berhasil disimpan!', 'success');
+  } catch (err) {
+    showToast('Gagal menyimpan: ' + err.message, 'error');
+  }
+}
+
+async function resetSettings() {
+  if (!confirm('Reset ke data default? Data yang sudah disimpan akan hilang.')) return;
+  try {
+    await saveCampaign({ ...DEFAULT_CAMPAIGN });
+    loadSettingsForm();
+    showToast('Settings direset ke default', 'info');
+  } catch (err) {
+    showToast('Gagal reset: ' + err.message, 'error');
+  }
+}
+
+/* ── Image Picker Widget ──────────────────────────────────────
+   Usage:
+     imagePicker(pickerId)           → returns HTML string for the widget
+     setImagePicker(pickerId, url)   → set existing image URL into widget
+     getImagePicker(pickerId)        → returns current image URL string
+──────────────────────────────────────────────────────────────── */
+function imagePicker(pickerId) {
+  return `
+    <div class="img-picker" id="picker-${pickerId}">
+      <div class="img-picker-dropzone" id="dz-${pickerId}"
+           onclick="document.getElementById('file-${pickerId}').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleImageDrop(event,'${pickerId}')">
+        <span class="mi">upload_file</span>
+        <span class="hint">Klik atau seret gambar ke sini<br><small>PNG, JPG, WEBP — maks. 5 MB</small></span>
+        <input type="file" id="file-${pickerId}" accept="image/*" onchange="handleImagePick(event,'${pickerId}')">
+      </div>
+      <div class="img-picker-uploading" id="upl-${pickerId}">
+        <div class="spinner"></div> Mengupload gambar…
+      </div>
+      <div class="img-picker-preview" id="prev-${pickerId}">
+        <img id="prevImg-${pickerId}" src="" alt="Preview">
+        <button type="button" class="img-picker-clear mi" onclick="clearImagePicker('${pickerId}')">close</button>
+      </div>
+      <input type="hidden" id="${pickerId}" value="">
+    </div>
+  `;
+}
+
+async function handleImagePick(event, pickerId) {
+  const file = event.target.files[0];
+  if (!file) return;
+  await _uploadImageFile(file, pickerId);
+  event.target.value = ''; // reset input so same file can be picked again
+}
+
+async function handleImageDrop(event, pickerId) {
+  event.preventDefault();
+  document.getElementById('dz-' + pickerId).classList.remove('drag-over');
+  const file = event.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) {
+    showToast('File harus berupa gambar', 'error'); return;
+  }
+  await _uploadImageFile(file, pickerId);
+}
+
+async function _uploadImageFile(file, pickerId) {
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Ukuran file melebihi 5 MB', 'error'); return;
+  }
+  const uplEl  = document.getElementById('upl-' + pickerId);
+  const dzEl   = document.getElementById('dz-'  + pickerId);
+  uplEl.style.display = 'flex';
+  dzEl.style.display  = 'none';
+  try {
+    const fd = new FormData();
+    fd.append('image', file);
+    const resp = await fetch(API_BASE + '/api/upload', {
+      method: 'POST',
+      headers: { 'x-api-key': API_KEY },
+      body: fd,
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || resp.statusText);
+    }
+    const { url } = await resp.json();
+    setImagePicker(pickerId, url);
+    showToast('Gambar berhasil diupload', 'success');
+  } catch (err) {
+    showToast('Upload gagal: ' + err.message, 'error');
+    uplEl.style.display = 'none';
+    dzEl.style.display  = '';
+  }
+}
+
+function setImagePicker(pickerId, url) {
+  const dzEl    = document.getElementById('dz-'      + pickerId);
+  const prevEl  = document.getElementById('prev-'    + pickerId);
+  const imgEl   = document.getElementById('prevImg-' + pickerId);
+  const uplEl   = document.getElementById('upl-'     + pickerId);
+  const hiddenEl = document.getElementById(pickerId);
+  if (url) {
+    imgEl.src              = url;
+    prevEl.style.display   = 'block';
+    dzEl.style.display     = 'none';
+    uplEl.style.display    = 'none';
+    hiddenEl.value         = url;
+  } else {
+    prevEl.style.display   = 'none';
+    dzEl.style.display     = '';
+    uplEl.style.display    = 'none';
+    hiddenEl.value         = '';
+  }
+}
+
+function clearImagePicker(pickerId) {
+  setImagePicker(pickerId, '');
+}
+
+function getImagePicker(pickerId) {
+  const el = document.getElementById(pickerId);
+  return el ? el.value : '';
+}
+
+/* ═══════════════════════════════════════════════
+   DONOR MANAGEMENT
+═══════════════════════════════════════════════ */
+let donorFilter = { search:'', provinsi:'', kategori:'', dateFrom:'', dateTo:'' };
+let donorSort   = { col:'tanggal', dir:'desc' };
+let donorPage   = 1;
+const PER_PAGE  = 10;
+
+function onDonorSearch(val) {
+  donorFilter.search = val;
+  donorPage = 1;
+  renderDonorTable();
+}
+function applyDonorFilter() {
+  donorFilter.provinsi  = document.getElementById('filterProvinsi').value;
+  donorFilter.kategori  = document.getElementById('filterKategori').value;
+  donorFilter.dateFrom  = document.getElementById('filterDateFrom').value;
+  donorFilter.dateTo    = document.getElementById('filterDateTo').value;
+  donorPage = 1;
+  renderDonorTable();
+}
+function resetDonorFilters() {
+  donorFilter = { search:'', provinsi:'', kategori:'', dateFrom:'', dateTo:'' };
+  document.getElementById('donorSearch').value = '';
+  document.getElementById('filterProvinsi').value = '';
+  document.getElementById('filterKategori').value = '';
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  donorPage = 1;
+  renderDonorTable();
+}
+function sortDonors(col) {
+  if (donorSort.col === col) donorSort.dir = donorSort.dir === 'asc' ? 'desc' : 'asc';
+  else { donorSort.col = col; donorSort.dir = 'asc'; }
+  renderDonorTable();
+}
+
+function getFilteredDonors() {
+  let arr = getDonors();
+  const { search, provinsi, kategori, dateFrom, dateTo } = donorFilter;
+  if (search) {
+    const q = search.toLowerCase();
+    arr = arr.filter(d =>
+      (d.nama||'').toLowerCase().includes(q) ||
+      (d.email||'').toLowerCase().includes(q) ||
+      (d.phone||'').includes(q) ||
+      (d.kota||'').toLowerCase().includes(q)
+    );
+  }
+  if (provinsi) arr = arr.filter(d => d.provinsi === provinsi);
+  if (kategori) arr = arr.filter(d => getKategori(d.jumlah) === kategori);
+  if (dateFrom) arr = arr.filter(d => (d.tanggal||'') >= dateFrom);
+  if (dateTo)   arr = arr.filter(d => (d.tanggal||'').slice(0,10) <= dateTo);
+
+  arr.sort((a, b) => {
+    let va = a[donorSort.col], vb = b[donorSort.col];
+    if (donorSort.col === 'kategori') { va = getKategori(a.jumlah); vb = getKategori(b.jumlah); }
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = (vb||'').toLowerCase(); }
+    if (va < vb) return donorSort.dir === 'asc' ? -1 : 1;
+    if (va > vb) return donorSort.dir === 'asc' ? 1  : -1;
+    return 0;
+  });
+  return arr;
+}
+
+function renderDonorTable() {
+  // Refresh province filter options
+  const provinces = [...new Set(getDonors().map(d => d.provinsi).filter(Boolean))].sort();
+  const provSel = document.getElementById('filterProvinsi');
+  const prevProv = provSel.value;
+  provSel.innerHTML = '<option value="">Semua Provinsi</option>' +
+    provinces.map(p => `<option value="${escHtml(p)}" ${p===prevProv?'selected':''}>${escHtml(p)}</option>`).join('');
+
+  const filtered = getFilteredDonors();
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+  if (donorPage > pages) donorPage = pages;
+  const slice = filtered.slice((donorPage - 1) * PER_PAGE, donorPage * PER_PAGE);
+
+  const tbody = document.getElementById('donorTbody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="9"><div class="table-empty"><span class="mi">search_off</span>Tidak ada data yang cocok dengan filter</div></td></tr>';
+  } else {
+    tbody.innerHTML = slice.map((d, i) => {
+      const kat = getKategori(d.jumlah);
+      const clr = d.nama === 'Anonim' ? '#94a3b8' : avatarColor(d.nama);
+      const ini = initials(d.nama);
+      return `
+        <tr>
+          <td style="color:var(--text-muted);font-weight:600">${(donorPage-1)*PER_PAGE + i + 1}</td>
+          <td>
+            <div class="donor-cell">
+              <div class="donor-avatar-sm" style="background:${clr}">${ini}</div>
+              <div class="donor-name">${escHtml(d.nama)}</div>
+            </div>
+          </td>
+          <td>
+            <div class="text-sm">${escHtml(d.email||'—')}</div>
+            <div class="text-sm text-muted">${escHtml(d.phone||'')}</div>
+          </td>
+          <td>
+            <div class="text-sm">${escHtml(d.kota||'—')}</div>
+            <div class="text-sm text-muted">${escHtml(d.provinsi||'')}</div>
+          </td>
+          <td class="text-right fw-bold" style="color:var(--primary-dark)">${rupiah(d.jumlah)}</td>
+          <td class="text-sm">${formatDate(d.tanggal)}</td>
+          <td class="text-sm text-italic text-muted" style="max-width:140px;white-space:normal">${d.doa ? '"' + escHtml(d.doa) + '"' : '—'}</td>
+          <td><span class="badge badge-${kat.toLowerCase()}">${kat}</span></td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-icon" onclick="openEditDonor('${d.id}')" title="Edit"><span class="mi">edit</span></button>
+              <button class="btn-icon danger" onclick="confirmDeleteDonor('${d.id}')" title="Hapus"><span class="mi">delete</span></button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  // Pagination
+  const pagi = document.getElementById('donorPagination');
+  if (total === 0) { pagi.innerHTML = ''; return; }
+  let btns = '';
+  for (let p = 1; p <= pages; p++) {
+    if (pages > 7 && p > 2 && p < pages - 1 && Math.abs(p - donorPage) > 1) {
+      if (p === 3 || p === pages - 2) btns += `<span style="padding:0 4px;color:var(--text-muted)">…</span>`;
+      continue;
+    }
+    btns += `<button class="pagi-btn${p===donorPage?' active':''}" onclick="goDonorPage(${p})">${p}</button>`;
+  }
+  pagi.innerHTML = `
+    <span>${((donorPage-1)*PER_PAGE+1)}–${Math.min(donorPage*PER_PAGE,total)} dari ${total} donatur</span>
+    <div class="pagi-btns">
+      <button class="pagi-btn" onclick="goDonorPage(${donorPage-1})" ${donorPage===1?'disabled':''}>‹</button>
+      ${btns}
+      <button class="pagi-btn" onclick="goDonorPage(${donorPage+1})" ${donorPage===pages?'disabled':''}>›</button>
+    </div>`;
+}
+
+function goDonorPage(p) {
+  const pages = Math.max(1, Math.ceil(getFilteredDonors().length / PER_PAGE));
+  if (p < 1 || p > pages) return;
+  donorPage = p;
+  renderDonorTable();
+}
+
+/* ── Donor CRUD ─────────────────────────────── */
+function donorModalHtml(data) {
+  const d = data || {};
+  return `
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label>Nama Donatur *</label>
+        <input id="f-nama" type="text" required placeholder="Nama lengkap" value="${escHtml(d.nama||'')}">
+      </div>
+      <div class="form-group">
+        <label>Jumlah Infaq (Rp) *</label>
+        <input id="f-jumlah" type="number" required min="1000" placeholder="100000" value="${d.jumlah||''}">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input id="f-email" type="email" placeholder="email@domain.com" value="${escHtml(d.email||'')}">
+      </div>
+      <div class="form-group">
+        <label>Nomor HP</label>
+        <input id="f-phone" type="tel" placeholder="08xxxxxxxxx" value="${escHtml(d.phone||'')}">
+      </div>
+      <div class="form-group">
+        <label>Kota</label>
+        <input id="f-kota" type="text" placeholder="Bandung" value="${escHtml(d.kota||'')}">
+      </div>
+      <div class="form-group">
+        <label>Provinsi</label>
+        <input id="f-provinsi" type="text" list="provinsiList" placeholder="Jawa Barat" value="${escHtml(d.provinsi||'')}">
+        <datalist id="provinsiList">${PROVINCES_ID.map(p=>`<option value="${p}">`).join('')}</datalist>
+      </div>
+      <div class="form-group">
+        <label>Tanggal Bergabung</label>
+        <input id="f-tanggal" type="datetime-local" value="${d.tanggal ? d.tanggal.slice(0,16) : new Date().toISOString().slice(0,16)}">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label>Doa / Pesan</label>
+      <textarea id="f-doa" rows="2" placeholder="Semoga berkah...">${escHtml(d.doa||'')}</textarea>
+    </div>
+    <input type="hidden" id="f-editId" value="${d.id||''}">
+  `;
+}
+
+function openAddDonor() {
+  document.getElementById('modalTitle').textContent = 'Tambah Donatur';
+  document.getElementById('modalBody').innerHTML = donorModalHtml();
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-primary" onclick="submitDonorForm()"><span class="mi">save</span> Simpan</button>
+  `;
+  openModal();
+}
+
+function openEditDonor(id) {
+  const donor = getDonors().find(d => d.id === id);
+  if (!donor) return;
+  document.getElementById('modalTitle').textContent = 'Edit Donatur';
+  document.getElementById('modalBody').innerHTML = donorModalHtml(donor);
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-primary" onclick="submitDonorForm()"><span class="mi">save</span> Simpan</button>
+  `;
+  openModal();
+}
+
+async function submitDonorForm() {
+  const nama   = document.getElementById('f-nama').value.trim();
+  const jumlah = parseInt(document.getElementById('f-jumlah').value) || 0;
+  if (!nama) { showToast('Nama donatur harus diisi', 'error'); return; }
+  if (jumlah < 1000) { showToast('Jumlah infaq minimal Rp 1.000', 'error'); return; }
+
+  const payload = {
+    nama,
+    jumlah,
+    email:    document.getElementById('f-email').value.trim(),
+    phone:    document.getElementById('f-phone').value.trim(),
+    kota:     document.getElementById('f-kota').value.trim(),
+    provinsi: document.getElementById('f-provinsi').value.trim(),
+    tanggal:  new Date(document.getElementById('f-tanggal').value || Date.now()).toISOString(),
+    doa:      document.getElementById('f-doa').value.trim(),
+    kategori: getKategori(jumlah),
+  };
+
+  const editId = document.getElementById('f-editId').value;
+  try {
+    if (editId) {
+      await apiFetch(`/api/donors/${editId}`, { method: 'PUT', body: JSON.stringify(payload) });
+      const idx = _donors.findIndex(d => d.id === editId);
+      if (idx > -1) _donors[idx] = { ..._donors[idx], ...payload };
+      showToast('Data donatur diperbarui', 'success');
+    } else {
+      const newDonor = { ...payload, id: genId('d'), createdAt: new Date().toISOString() };
+      await apiFetch('/api/donors', { method: 'POST', body: JSON.stringify(newDonor) });
+      _donors.unshift(newDonor);
+      showToast('Donatur berhasil ditambahkan', 'success');
+    }
+    updateDonorCountBadge();
+    closeModal();
+    renderDonorTable();
+  } catch (err) {
+    showToast('Gagal menyimpan: ' + err.message, 'error');
+  }
+}
+
+function confirmDeleteDonor(id) {
+  const donor = _donors.find(d => d.id === id);
+  if (!donor) return;
+  document.getElementById('modalTitle').textContent = 'Hapus Donatur';
+  document.getElementById('modalBody').innerHTML = `
+    <p style="font-size:14px;color:var(--text-mid);line-height:1.7">
+      Anda yakin ingin menghapus data donatur <strong>${escHtml(donor.nama)}</strong> (${rupiah(donor.jumlah)})?
+      <br>Tindakan ini tidak dapat dibatalkan.
+    </p>
+  `;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-danger" onclick="deleteDonor('${id}')"><span class="mi">delete</span> Hapus</button>
+  `;
+  openModal();
+}
+
+async function deleteDonor(id) {
+  try {
+    await apiFetch(`/api/donors/${id}`, { method: 'DELETE' });
+    _donors = _donors.filter(d => d.id !== id);
+    updateDonorCountBadge();
+    closeModal();
+    renderDonorTable();
+    showToast('Donatur dihapus', 'info');
+  } catch (err) {
+    showToast('Gagal menghapus: ' + err.message, 'error');
+  }
+}
+
+/* ── Export CSV ─────────────────────────────── */
+function exportCSV() {
+  const donors = getFilteredDonors();
+  const headers = ['No','Nama','Email','No HP','Kota','Provinsi','Jumlah Infaq','Tanggal','Doa','Kategori'];
+  const rows = donors.map((d, i) => [
+    i + 1,
+    `"${(d.nama||'').replace(/"/g,'""')}"`,
+    d.email || '',
+    d.phone || '',
+    d.kota || '',
+    d.provinsi || '',
+    d.jumlah || 0,
+    (d.tanggal || '').slice(0, 10),
+    `"${(d.doa||'').replace(/"/g,'""')}"`,
+    getKategori(d.jumlah),
+  ]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `donatur_bam_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast(`${donors.length} data berhasil diexport CSV`, 'success');
+}
+
+/* ═══════════════════════════════════════════════
+   PROGRAM UPDATES
+═══════════════════════════════════════════════ */
+function renderUpdateAdmin() {
+  const updates = getUpdates();
+  const list = document.getElementById('updateAdminList');
+  if (!updates.length) {
+    list.innerHTML = `<div class="empty-state">
+      <span class="mi">article</span><h4>Belum ada update</h4>
+      <p>Klik tombol "Tambah Update" untuk menambahkan berita kegiatan</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = updates.map(u => `
+    <div class="item-card">
+      ${u.thumbnailUrl
+        ? `<img class="item-card-thumb" src="${escHtml(u.thumbnailUrl)}" alt="" onerror="this.style.display='none'">`
+        : `<div class="item-card-thumb-placeholder"><span class="mi">image</span></div>`}
+      <div class="item-card-body">
+        <div class="item-card-date">${u.tanggal ? new Date(u.tanggal + 'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}) : '—'}</div>
+        <div class="item-card-title">${escHtml(u.judul)}</div>
+        <div class="item-card-desc">${escHtml(u.deskripsi)}</div>
+      </div>
+      <div class="item-card-actions">
+        <button class="btn-icon" onclick="openEditUpdate('${u.id}')" title="Edit"><span class="mi">edit</span></button>
+        <button class="btn-icon danger" onclick="confirmDeleteUpdate('${u.id}')" title="Hapus"><span class="mi">delete</span></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateModalHtml(data) {
+  const u = data || {};
+  return `
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label>Tanggal *</label>
+        <input id="u-tanggal" type="date" required value="${u.tanggal||new Date().toISOString().slice(0,10)}">
+      </div>
+      <div class="form-group">
+        <label>Thumbnail</label>
+        ${imagePicker('u-thumbnail')}
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label>Judul *</label>
+      <input id="u-judul" type="text" required placeholder="Distribusi 50 Quran ke..." value="${escHtml(u.judul||'')}">
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label>Deskripsi</label>
+      <textarea id="u-deskripsi" rows="3" placeholder="Alhamdulillah...">${escHtml(u.deskripsi||'')}</textarea>
+    </div>
+    <input type="hidden" id="u-editId" value="${u.id||''}">
+  `;
+}
+
+function openAddUpdate() {
+  document.getElementById('modalTitle').textContent = 'Tambah Program Update';
+  document.getElementById('modalBody').innerHTML = updateModalHtml();
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-primary" onclick="submitUpdateForm()"><span class="mi">save</span> Simpan</button>
+  `;
+  openModal();
+}
+
+function openEditUpdate(id) {
+  const u = getUpdates().find(x => x.id === id);
+  if (!u) return;
+  document.getElementById('modalTitle').textContent = 'Edit Program Update';
+  document.getElementById('modalBody').innerHTML = updateModalHtml(u);
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-primary" onclick="submitUpdateForm()"><span class="mi">save</span> Simpan</button>
+  `;
+  if (u.thumbnailUrl) setImagePicker('u-thumbnail', u.thumbnailUrl);
+  openModal();
+}
+
+async function submitUpdateForm() {
+  const judul   = document.getElementById('u-judul').value.trim();
+  const tanggal = document.getElementById('u-tanggal').value;
+  if (!judul)   { showToast('Judul harus diisi', 'error'); return; }
+  if (!tanggal) { showToast('Tanggal harus diisi', 'error'); return; }
+  const payload = {
+    judul,
+    tanggal:      document.getElementById('u-tanggal').value,
+    deskripsi:    document.getElementById('u-deskripsi').value.trim(),
+    thumbnailUrl: getImagePicker('u-thumbnail'),
+  };
+  const editId = document.getElementById('u-editId').value;
+  try {
+    if (editId) {
+      await apiFetch(`/api/updates/${editId}`, { method: 'PUT', body: JSON.stringify(payload) });
+      const idx = _updates.findIndex(u => u.id === editId);
+      if (idx > -1) _updates[idx] = { ..._updates[idx], ...payload };
+      showToast('Update diperbarui', 'success');
+    } else {
+      const newUpd = { ...payload, id: genId('u'), createdAt: new Date().toISOString() };
+      await apiFetch('/api/updates', { method: 'POST', body: JSON.stringify(newUpd) });
+      _updates.unshift(newUpd);
+      showToast('Update ditambahkan', 'success');
+    }
+    closeModal();
+    renderUpdateAdmin();
+  } catch (err) {
+    showToast('Gagal menyimpan: ' + err.message, 'error');
+  }
+}
+
+function confirmDeleteUpdate(id) {
+  const u = _updates.find(x => x.id === id);
+  if (!u) return;
+  document.getElementById('modalTitle').textContent = 'Hapus Update';
+  document.getElementById('modalBody').innerHTML = `<p style="font-size:14px;color:var(--text-mid)">Hapus update "<strong>${escHtml(u.judul)}</strong>"? Tindakan ini tidak dapat dibatalkan.</p>`;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-danger" onclick="deleteUpdate('${id}')"><span class="mi">delete</span> Hapus</button>
+  `;
+  openModal();
+}
+async function deleteUpdate(id) {
+  try {
+    await apiFetch(`/api/updates/${id}`, { method: 'DELETE' });
+    _updates = _updates.filter(u => u.id !== id);
+    closeModal(); renderUpdateAdmin();
+    showToast('Update dihapus', 'info');
+  } catch (err) {
+    showToast('Gagal menghapus: ' + err.message, 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   FAQ MANAGEMENT
+═══════════════════════════════════════════════ */
+function renderFaqAdmin() {
+  const faqs = getFaqs();
+  const list = document.getElementById('faqAdminList');
+  if (!faqs.length) {
+    list.innerHTML = `<div class="empty-state">
+      <span class="mi">contact_support</span><h4>Belum ada FAQ</h4>
+      <p>Klik tombol "Tambah FAQ" untuk menambahkan pertanyaan umum</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = faqs.map((f, i) => `
+    <div class="faq-admin-item">
+      <div class="faq-order-btns">
+        <button class="faq-order-btn" onclick="moveFaq('${f.id}',-1)" ${i===0?'disabled':''} title="Naik">▲</button>
+        <button class="faq-order-btn" onclick="moveFaq('${f.id}',1)" ${i===faqs.length-1?'disabled':''} title="Turun">▼</button>
+      </div>
+      <div class="faq-admin-body" style="flex:1">
+        <div class="faq-admin-q">${escHtml(f.pertanyaan)}</div>
+        <div class="faq-admin-a">${escHtml(f.jawaban)}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;align-self:flex-start">
+        <button class="btn-icon" onclick="openEditFaq('${f.id}')" title="Edit"><span class="mi">edit</span></button>
+        <button class="btn-icon danger" onclick="confirmDeleteFaq('${f.id}')" title="Hapus"><span class="mi">delete</span></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function moveFaq(id, dir) {
+  const direction = dir === -1 ? 'up' : 'down';
+  try {
+    await apiFetch(`/api/faqs/${id}/order`, { method: 'PUT', body: JSON.stringify({ direction }) });
+    // Update in-memory order
+    const idx = _faqs.findIndex(f => f.id === id);
+    const newIdx = idx + dir;
+    if (newIdx >= 0 && newIdx < _faqs.length) {
+      [_faqs[idx], _faqs[newIdx]] = [_faqs[newIdx], _faqs[idx]];
+    }
+    renderFaqAdmin();
+  } catch (err) {
+    showToast('Gagal mengubah urutan: ' + err.message, 'error');
+  }
+}
+
+function faqModalHtml(data) {
+  const f = data || {};
+  return `
+    <div class="form-group">
+      <label>Pertanyaan *</label>
+      <input id="fq-pertanyaan" type="text" required placeholder="Bagaimana cara berdonasi?" value="${escHtml(f.pertanyaan||'')}">
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label>Jawaban *</label>
+      <textarea id="fq-jawaban" rows="4" required placeholder="Pilih atau masukkan nominal...">${escHtml(f.jawaban||'')}</textarea>
+    </div>
+    <input type="hidden" id="fq-editId" value="${f.id||''}">
+  `;
+}
+
+function openAddFaq() {
+  document.getElementById('modalTitle').textContent = 'Tambah FAQ';
+  document.getElementById('modalBody').innerHTML = faqModalHtml();
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-primary" onclick="submitFaqForm()"><span class="mi">save</span> Simpan</button>
+  `;
+  openModal();
+}
+
+function openEditFaq(id) {
+  const f = _faqs.find(x => x.id === id);
+  if (!f) return;
+  document.getElementById('modalTitle').textContent = 'Edit FAQ';
+  document.getElementById('modalBody').innerHTML = faqModalHtml(f);
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-primary" onclick="submitFaqForm()"><span class="mi">save</span> Simpan</button>
+  `;
+  openModal();
+}
+
+async function submitFaqForm() {
+  const pertanyaan = document.getElementById('fq-pertanyaan').value.trim();
+  const jawaban    = document.getElementById('fq-jawaban').value.trim();
+  if (!pertanyaan || !jawaban) { showToast('Pertanyaan dan jawaban harus diisi', 'error'); return; }
+  const editId = document.getElementById('fq-editId').value;
+  try {
+    if (editId) {
+      await apiFetch(`/api/faqs/${editId}`, { method: 'PUT', body: JSON.stringify({ pertanyaan, jawaban }) });
+      const idx = _faqs.findIndex(f => f.id === editId);
+      if (idx > -1) _faqs[idx] = { ..._faqs[idx], pertanyaan, jawaban };
+      showToast('FAQ diperbarui', 'success');
+    } else {
+      const newFaq = { id: genId('f'), pertanyaan, jawaban, createdAt: new Date().toISOString() };
+      await apiFetch('/api/faqs', { method: 'POST', body: JSON.stringify(newFaq) });
+      _faqs.push(newFaq);
+      showToast('FAQ ditambahkan', 'success');
+    }
+    closeModal();
+    renderFaqAdmin();
+  } catch (err) {
+    showToast('Gagal menyimpan FAQ: ' + err.message, 'error');
+  }
+}
+
+function confirmDeleteFaq(id) {
+  const f = _faqs.find(x => x.id === id);
+  if (!f) return;
+  document.getElementById('modalTitle').textContent = 'Hapus FAQ';
+  document.getElementById('modalBody').innerHTML = `<p style="font-size:14px;color:var(--text-mid)">Hapus FAQ "<strong>${escHtml(f.pertanyaan)}</strong>"?</p>`;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <button class="btn btn-danger" onclick="deleteFaq('${id}')"><span class="mi">delete</span> Hapus</button>
+  `;
+  openModal();
+}
+async function deleteFaq(id) {
+  try {
+    await apiFetch(`/api/faqs/${id}`, { method: 'DELETE' });
+    _faqs = _faqs.filter(f => f.id !== id);
+    closeModal(); renderFaqAdmin();
+    showToast('FAQ dihapus', 'info');
+  } catch (err) {
+    showToast('Gagal menghapus FAQ: ' + err.message, 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   CAMPAIGN STATS
+═══════════════════════════════════════════════ */
+let chartProvinsiInst, chartAmtDistInst;
+
+function renderStats() {
+  const donors = getDonors();
+
+  // Segmentation
+  const segments = {
+    baru:  donors.filter(d => d.jumlah < 100000),
+    loyal: donors.filter(d => d.jumlah >= 100000 && d.jumlah <= 500000),
+    vip:   donors.filter(d => d.jumlah > 500000),
+  };
+  for (const [key, arr] of Object.entries(segments)) {
+    const count = arr.length;
+    const total = arr.reduce((s, d) => s + (d.jumlah||0), 0);
+    const avg   = count ? Math.round(total / count) : 0;
+    document.getElementById(`stat-${key}-count`).textContent = count;
+    document.getElementById(`stat-${key}-avg`).textContent   = count ? `avg ${rupiah(avg)}` : '—';
+    document.getElementById(`stat-${key}-total`).textContent = count ? `total ${rupiah(total)}` : '';
+  }
+
+  // Province aggregation
+  const provMap = {};
+  donors.forEach(d => {
+    const p = d.provinsi || 'Tidak Diketahui';
+    if (!provMap[p]) provMap[p] = { count: 0, total: 0 };
+    provMap[p].count++;
+    provMap[p].total += (d.jumlah || 0);
+  });
+  const provArr = Object.entries(provMap)
+    .map(([name, v]) => ({ name, count: v.count, total: v.total, avg: Math.round(v.total/v.count) }))
+    .sort((a, b) => b.total - a.total);
+
+  document.getElementById('provinsiStatsTbody').innerHTML = provArr.length
+    ? provArr.map(p => `
+        <tr>
+          <td>${escHtml(p.name)}</td>
+          <td class="text-right">${p.count}</td>
+          <td class="text-right fw-bold">${rupiah(p.total)}</td>
+          <td class="text-right" style="color:var(--text-muted)">${rupiah(p.avg)}</td>
+        </tr>`).join('')
+    : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted)">Belum ada data</td></tr>';
+
+  // Province chart
+  if (chartProvinsiInst) chartProvinsiInst.destroy();
+  const top10 = provArr.slice(0, 10);
+  chartProvinsiInst = new Chart(document.getElementById('chartProvinsi'), {
+    type: 'bar',
+    data: {
+      labels: top10.map(p => p.name.length > 14 ? p.name.slice(0,14)+'…' : p.name),
+      datasets: [{
+        data: top10.map(p => p.total),
+        backgroundColor: '#20A39C', borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { callback: v => 'Rp ' + (v/1000000).toFixed(1) + 'jt', font: { size: 10 } } },
+        y: { ticks: { font: { size: 11 } } },
+      }
+    }
+  });
+
+  // Amount distribution buckets
+  const buckets = [
+    { label:'<25k',        min:0,      max:24999 },
+    { label:'25k–50k',     min:25000,  max:49999 },
+    { label:'50k–100k',    min:50000,  max:99999 },
+    { label:'100k–250k',   min:100000, max:249999 },
+    { label:'250k–500k',   min:250000, max:499999 },
+    { label:'500k–1jt',    min:500000, max:999999 },
+    { label:'>1jt',        min:1000000,max:Infinity },
+  ];
+  const bucketCounts = buckets.map(b => donors.filter(d => d.jumlah >= b.min && d.jumlah <= b.max).length);
+  if (chartAmtDistInst) chartAmtDistInst.destroy();
+  chartAmtDistInst = new Chart(document.getElementById('chartAmtDist'), {
+    type: 'bar',
+    data: {
+      labels: buckets.map(b => b.label),
+      datasets: [{
+        label: 'Jumlah Donatur',
+        data: bucketCounts,
+        backgroundColor: buckets.map((_, i) => AVATAR_COLORS[i % AVATAR_COLORS.length]),
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } },
+        x: { ticks: { font: { size: 12 } } },
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   DATA SYNC
+═══════════════════════════════════════════════ */
+function previewData() {
+  window.open('index.html', '_blank');
+}
+
+async function exportAll() {
+  try {
+    const data = await apiFetch('/api/export');
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `bam_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    showToast('Backup JSON berhasil didownload', 'success');
+  } catch (err) {
+    showToast('Gagal export data: ' + err.message, 'error');
+  }
+}
+
+function importAll(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.bam_campaign && !data.bam_donors) {
+        showToast('Format file tidak valid', 'error'); return;
+      }
+      await apiFetch('/api/import', { method: 'POST', body: e.target.result });
+      showToast('Import berhasil! Memuat ulang...', 'success');
+      setTimeout(() => location.reload(), 1200);
+    } catch (err) {
+      showToast('Gagal import: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════ */
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOnBg(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+let _toastTimer;
+function showToast(msg, type = 'success') {
+  const icons = { success: 'check_circle', error: 'error', info: 'info' };
+  const t = document.getElementById('adminToast');
+  t.innerHTML = `<span class="mi">${icons[type]||'info'}</span> ${escHtml(msg)}`;
+  t.className = `admin-toast ${type} show`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load all data from API
+  try {
+    const [camp, donorsRes, updatesRes, faqsRes] = await Promise.all([
+      apiFetch('/api/campaign'),
+      apiFetch('/api/donors?limit=1000'),
+      apiFetch('/api/updates'),
+      apiFetch('/api/faqs'),
+    ]);
+    _campaign = camp;
+    _donors   = (donorsRes.data || donorsRes).map(d => ({ ...d, jumlah: Number(d.jumlah) || 0 }));
+    _updates  = updatesRes;
+    _faqs     = faqsRes;
+  } catch (err) {
+    console.warn('API tidak tersedia, gunakan data default:', err.message);
+    showToast('Backend tidak tersedia — pastikan server berjalan', 'error');
+  }
+
+  // Topbar date
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('id-ID', {
+    weekday:'long', day:'numeric', month:'long', year:'numeric'
+  });
+
+  updateDonorCountBadge();
+  navigate('dashboard');
+});
+</script>
+</body>
+</html>
